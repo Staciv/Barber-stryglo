@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Zap, Clock, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { VoiceButton } from "@/components/voice-button";
@@ -20,65 +20,178 @@ export function HomeScreen() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-hero-grid bg-hero-grid">
-      <div className="mx-auto flex min-h-screen max-w-md flex-col px-4 pb-8 pt-5">
+      {/* Ambient glow effects */}
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse_at_center,rgba(255,107,0,0.12),transparent_60%)] blur-3xl" />
+        <div className="absolute right-0 top-1/4 h-[400px] w-[400px] bg-[radial-gradient(ellipse_at_center,rgba(0,212,255,0.06),transparent_60%)] blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-4 pb-8 pt-6">
+        {/* Hero Header Card */}
         <motion.header
-          initial={{ opacity: 0, y: -18 }}
+          initial={{ opacity: 0, y: -24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-[30px] border border-white/10 bg-black/25 p-5 shadow-card backdrop-blur-xl"
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="glass-panel-elevated relative overflow-hidden rounded-[32px] p-6"
         >
-          <div className="flex items-center justify-between">
-            <p className="text-xl font-extrabold tracking-[0.3em] text-white">STRIGLO</p>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/75">10 sec booking</span>
-          </div>
-          <div className="mt-10 space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs text-accent">
-              <Sparkles className="size-3.5" />
-              Street + Minimal + Tech
+          {/* Subtle inner glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/[0.03] via-transparent to-accent-cyan/[0.02]" />
+
+          <div className="relative">
+            {/* Brand Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-[#e55a00] shadow-glow">
+                  <Zap className="size-5 text-white" />
+                </div>
+                <p className="text-xl font-bold tracking-[0.2em] text-white">
+                  STRIGLO
+                </p>
+              </div>
+              <span className="rounded-full border border-accent/20 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent">
+                10 sec booking
+              </span>
             </div>
-            <h1 className="max-w-xs text-4xl font-extrabold leading-tight text-white">Когда тебе удобно?</h1>
-            <p className="max-w-xs text-base text-muted">Запишись за 10 секунд</p>
+
+            {/* Hero Content */}
+            <div className="mt-10 space-y-4">
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="inline-flex items-center gap-2 rounded-full border border-accent-cyan/20 bg-accent-cyan/[0.08] px-3 py-1.5 text-xs font-medium text-accent-cyan"
+              >
+                <Sparkles className="size-3.5" />
+                Street Tech Barbershop
+              </motion.div>
+              <h1 className="max-w-[280px] text-[2.5rem] font-extrabold leading-[1.1] tracking-tight text-white">
+                Когда тебе удобно?
+              </h1>
+              <p className="max-w-xs text-base text-muted">
+                Запишись за 10 секунд. Без звонков, без ожидания.
+              </p>
+            </div>
           </div>
         </motion.header>
 
-        <section className="mt-5 grid gap-3">
-          <Button className="w-full justify-between" onClick={() => startBookingWithDay("today")}>
-            Сегодня
-            <ArrowRight className="size-4" />
+        {/* Quick Booking Actions */}
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5 }}
+          className="mt-5 grid gap-3"
+        >
+          <Button
+            className="group w-full justify-between"
+            onClick={() => startBookingWithDay("today")}
+          >
+            <span className="flex items-center gap-3">
+              <Clock className="size-4 text-white/70 transition-colors group-hover:text-white" />
+              Сегодня
+            </span>
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </Button>
-          <Button className="w-full justify-between" onClick={() => startBookingWithDay("tomorrow")}>
-            Завтра
-            <ArrowRight className="size-4" />
+          <Button
+            className="group w-full justify-between"
+            onClick={() => startBookingWithDay("tomorrow")}
+          >
+            <span className="flex items-center gap-3">
+              <Calendar className="size-4 text-white/70 transition-colors group-hover:text-white" />
+              Завтра
+            </span>
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </Button>
-          <Button variant="secondary" className="w-full justify-between" onClick={() => startBookingWithDay("custom")}>
-            Выбрать дату
-            <ArrowRight className="size-4" />
+          <Button
+            variant="secondary"
+            className="group w-full justify-between"
+            onClick={() => startBookingWithDay("custom")}
+          >
+            <span>Выбрать дату</span>
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </Button>
-        </section>
+        </motion.section>
 
-        <section className="mt-4 rounded-[28px] border border-white/10 bg-white/5 p-4 shadow-card">
-          <Link href="/recommendations" className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-base font-semibold text-white">Подобрать стрижку</p>
-              <p className="text-sm text-muted">Покажем стиль и сразу отправим в запись.</p>
+        {/* Premium Recommendation Card */}
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.5 }}
+          className="mt-4"
+        >
+          <Link
+            href="/recommendations"
+            className="glass-panel-elevated group relative block overflow-hidden rounded-[28px] p-5 transition-all duration-300 hover:border-accent/20 hover:shadow-card-hover"
+          >
+            {/* Gradient overlay on hover */}
+            <div className="absolute inset-0 bg-gradient-to-r from-accent/[0.04] to-accent-cyan/[0.02] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+            <div className="relative flex items-center justify-between gap-4">
+              <div className="space-y-1">
+                <p className="text-base font-semibold text-white transition-colors group-hover:text-accent">
+                  Подобрать стрижку
+                </p>
+                <p className="text-sm text-muted">
+                  Покажем стиль и сразу отправим в запись
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full border border-accent/30 bg-accent/15 px-3 py-1.5 text-xs font-medium text-accent shadow-[0_0_15px_rgba(255,107,0,0.15)]">
+                  Premium
+                </span>
+                <ArrowRight className="size-4 text-muted transition-all group-hover:translate-x-0.5 group-hover:text-white" />
+              </div>
             </div>
-            <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-white/80">Premium</span>
           </Link>
-        </section>
+        </motion.section>
 
-        <div className="mt-7 flex justify-center">
+        {/* Voice Button */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.35, duration: 0.4 }}
+          className="mt-8 flex justify-center"
+        >
           <VoiceButton onClick={handleVoiceClick} active />
-        </div>
+        </motion.div>
 
-        <section className="mt-auto space-y-3 pt-8">
-          <div className="rounded-[28px] border border-white/10 bg-white/5 p-4 text-sm text-white/75">
-            {voiceResult ?? "Голосовая бронь распознает день, время и услугу с mocked logic."}
+        {/* Bottom Info Section */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.45, duration: 0.5 }}
+          className="mt-auto space-y-4 pt-8"
+        >
+          {/* Voice Result Panel */}
+          <div className="glass-panel rounded-[24px] p-4 text-sm text-white/70">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-lg bg-accent-cyan/10">
+                <Sparkles className="size-3.5 text-accent-cyan" />
+              </div>
+              <p>
+                {voiceResult ??
+                  "Голосовая бронь распознает день, время и услугу с mocked logic."}
+              </p>
+            </div>
           </div>
-          <div className="grid grid-cols-3 gap-3 text-center text-xs text-white/60">
-            <div className="rounded-2xl border border-white/10 bg-black/15 px-3 py-4">Без звонков</div>
-            <div className="rounded-2xl border border-white/10 bg-black/15 px-3 py-4">1 экран</div>
-            <div className="rounded-2xl border border-white/10 bg-black/15 px-3 py-4">Живые слоты</div>
+
+          {/* Feature Pills */}
+          <div className="grid grid-cols-3 gap-2 text-center text-xs">
+            {[
+              { label: "Без звонков", icon: "off" },
+              { label: "1 экран", icon: "screen" },
+              { label: "Живые слоты", icon: "live" },
+            ].map((feature) => (
+              <div
+                key={feature.label}
+                className="glass-panel group rounded-2xl px-3 py-4 transition-all duration-300 hover:border-white/10"
+              >
+                <span className="text-white/60 transition-colors group-hover:text-white/80">
+                  {feature.label}
+                </span>
+              </div>
+            ))}
           </div>
-        </section>
+        </motion.section>
       </div>
     </main>
   );
