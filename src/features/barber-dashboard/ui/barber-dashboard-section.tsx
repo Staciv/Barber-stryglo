@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { EmptyState } from "@/shared/ui/empty-state";
+import { FadeIn } from "@/shared/ui/motion";
 import { SectionTitle } from "@/shared/ui/section-title";
 
 type BarberDashboardSectionProps = {
@@ -21,16 +23,13 @@ export function BarberDashboardSection({
   children,
 }: BarberDashboardSectionProps) {
   return (
-    <section className="space-y-3">
+    <FadeIn as="section" className="space-y-3">
       <SectionTitle title={title} subtitle={subtitle} action={action} />
       {empty ? (
-        <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-5">
-          <p className="text-sm font-semibold text-foreground">{emptyTitle}</p>
-          <p className="mt-1 text-sm leading-6 text-muted">{emptyText}</p>
-        </div>
+        <EmptyState title={emptyTitle} description={emptyText} />
       ) : (
         <div className="space-y-3">{children}</div>
       )}
-    </section>
+    </FadeIn>
   );
 }

@@ -8,6 +8,7 @@ import { useAuthStore } from "@/features/auth/model/auth-store";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
+import { InlineError } from "@/shared/ui/inline-error";
 import { cn } from "@/shared/lib/utils";
 
 type LoginStep = "phone" | "otp";
@@ -121,7 +122,7 @@ export default function LoginPage() {
                     setPhone(event.target.value);
                     setError("");
                   }}
-                  placeholder="+48 600 000 000"
+                  placeholder="+375 29 123 45 67"
                   className={cn(
                     "min-h-14 w-full rounded-2xl border bg-white/[0.04] px-4 text-base text-foreground outline-none transition-all placeholder:text-white/35 focus:border-accent focus:ring-2 focus:ring-accent/30",
                     error ? "border-danger/60" : "border-white/10",
@@ -129,7 +130,7 @@ export default function LoginPage() {
                 />
               </label>
 
-              {error && <p className="text-sm text-danger">{error}</p>}
+              <InlineError>{error}</InlineError>
 
               <Button type="submit" className="w-full" size="lg">
                 Получить код
@@ -164,7 +165,7 @@ export default function LoginPage() {
                 />
               </label>
 
-              {error && <p className="text-sm text-danger">{error}</p>}
+              <InlineError>{error}</InlineError>
 
               <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
                 <Button
@@ -179,7 +180,7 @@ export default function LoginPage() {
                   Назад
                 </Button>
                 <Button type="submit" loading={isSubmitting}>
-                  Войти
+                  {isSubmitting ? "Проверяем" : "Войти"}
                 </Button>
               </div>
             </form>

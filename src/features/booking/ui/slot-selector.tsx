@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import { EmptyState as SharedEmptyState } from "@/shared/ui/empty-state";
 import { cn } from "@/shared/lib/utils";
 import type { Slot, SlotsByDate } from "@/entities/slot/types";
 
@@ -14,9 +15,7 @@ export type SlotSelectorProps = {
 
 function EmptyState({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.03] px-4 py-5 text-center text-sm text-muted">
-      {children}
-    </div>
+    <SharedEmptyState compact title={String(children)} description="Проверь другую услугу или вернись чуть позже." />
   );
 }
 
@@ -90,7 +89,7 @@ export function SlotSelector({
                         className={cn(
                           "relative min-h-16 rounded-2xl border px-3 py-2 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                           selected
-                            ? "border-accent bg-accent text-white shadow-glow"
+                            ? "border-accent bg-accent text-white shadow-glow after:absolute after:right-3 after:top-3 after:size-2 after:rounded-full after:bg-white"
                             : "border-white/10 bg-black/20 text-foreground hover:border-white/20 hover:bg-white/10",
                         )}
                       >

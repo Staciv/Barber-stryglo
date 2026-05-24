@@ -11,6 +11,7 @@ type BookingDraftState = {
   setBarber: (barberId?: string) => void;
   setService: (serviceId: string) => void;
   clearSlot: () => void;
+  resetDraft: () => void;
 };
 
 export const useBookingDraftStore = create<BookingDraftState>((set) => ({
@@ -20,6 +21,8 @@ export const useBookingDraftStore = create<BookingDraftState>((set) => ({
   setSlot: (slot) => set({ selectedSlot: slot, selectedBarberId: undefined }),
   setBarber: (barberId) => set({ selectedBarberId: barberId }),
   setService: (serviceId) =>
-    set({ selectedServiceId: serviceId, selectedBarberId: undefined }),
+    set({ selectedServiceId: serviceId, selectedSlot: undefined, selectedBarberId: undefined }),
   clearSlot: () => set({ selectedSlot: undefined, selectedBarberId: undefined }),
+  resetDraft: () =>
+    set({ selectedSlot: undefined, selectedBarberId: undefined, selectedServiceId: "cut" }),
 }));

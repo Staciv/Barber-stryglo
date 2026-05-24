@@ -1,22 +1,29 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useMemo } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { mockBarbers } from "@/entities/barber/mock";
 import type { BarberProfile } from "@/entities/barber/types";
+import { useAppointmentStore } from "@/entities/booking/appointment-store";
 import { mockServices } from "@/entities/service/mock";
-import { mockSlots } from "@/entities/slot/mock";
+import { getMockSlots } from "@/entities/slot/mock";
 import { groupSlotsByDate } from "@/entities/slot/lib/group-slots-by-date";
 import { getAvailableBarbersForSelection } from "@/features/booking/lib/get-available-barbers";
+import { getBookableSlots } from "@/features/booking/lib/get-bookable-slots";
 import { useBookingDraftStore } from "@/features/booking/model/booking-draft-store";
 import { SlotSelector } from "@/features/booking/ui/slot-selector";
 import { Avatar } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
+import { EmptyState } from "@/shared/ui/empty-state";
+import { InlineError } from "@/shared/ui/inline-error";
 import { cn } from "@/shared/lib/utils";
 
-const slotGroups = groupSlotsByDate(mockSlots, { limit: 4 });
+function isPhoneValid(phone: string) {
+  return /^[+\d\s()-]{8,}$/.test(phone.trim());
+}
 
 function BarberCard({
   barber,
@@ -55,13 +62,33 @@ function BarberCard({
 }
 
 export default function BookingPage() {
+  const router = useRouter();
   const selectedSlot = useBookingDraftStore((state) => state.selectedSlot);
   const selectedBarberId = useBookingDraftStore((state) => state.selectedBarberId);
   const selectedServiceId = useBookingDraftStore((state) => state.selectedServiceId);
   const setSlot = useBookingDraftStore((state) => state.setSlot);
   const setBarber = useBookingDraftStore((state) => state.setBarber);
   const setService = useBookingDraftStore((state) => state.setService);
+  const clearSlot = useBookingDraftStore((state) => state.clearSlot);
+  const resetDraft = useBookingDraftStore((state) => state.resetDraft);
+  const createAppointment = useAppointmentStore((state) => state.createAppointment);
+  const contactRef = useRef<HTMLDivElement>(null);
+  const [showContact, setShowContact] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [errors, setErrors] = useState<{ customerName?: string; phone?: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const selectedService = mockServices.find((service) => service.id === selectedServiceId);
+  const bookableSlots = useMemo(
+    () =>
+      getBookableSlots({
+        slots: getMockSlots(),
+        service: selectedService,
+        barbers: mockBarbers,
+      }),
+    [selectedService],
+  );
+  const slotGroups = useMemo(() => groupSlotsByDate(bookableSlots, { limit: 4 }), [bookableSlots]);
 
   const availableBarbers = useMemo(
     () =>
@@ -74,8 +101,19 @@ export default function BookingPage() {
   );
   const selectedBarber = availableBarbers.find((barber) => barber.id === selectedBarberId);
   const canContinue = Boolean(selectedSlot && selectedBarber);
+  const blockedReason = !selectedSlot
+    ? "Сначала выбери свободное время"
+    : !selectedBarber
+      ? "Выбери доступного мастера"
+      : "";
 
   useEffect(() => {
+    if (selectedSlot && !bookableSlots.some((slot) => slot.id === selectedSlot.id)) {
+      clearSlot();
+      setShowContact(false);
+      return;
+    }
+
     if (availableBarbers.length === 1 && selectedBarberId !== availableBarbers[0].id) {
       setBarber(availableBarbers[0].id);
       return;
@@ -88,7 +126,49 @@ export default function BookingPage() {
     ) {
       setBarber(undefined);
     }
-  }, [availableBarbers, selectedBarberId, setBarber]);
+  }, [availableBarbers, bookableSlots, clearSlot, selectedBarberId, selectedSlot, setBarber]);
+
+  const handleContinue = () => {
+    if (!canContinue) {
+      return;
+    }
+
+    setShowContact(true);
+    window.requestAnimationFrame(() => contactRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const nextErrors = {
+      customerName: customerName.trim().length < 2 ? "Введите имя" : undefined,
+      phone: !phone.trim() ? "Введите телефон" : !isPhoneValid(phone) ? "Неверный формат телефона" : undefined,
+    };
+    setErrors(nextErrors);
+
+    if (nextErrors.customerName || nextErrors.phone || !selectedSlot || !selectedBarber || !selectedService) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    window.setTimeout(() => {
+      createAppointment({
+        serviceId: selectedService.id,
+        serviceTitle: selectedService.name,
+        barberId: selectedBarber.id,
+        barberName: selectedBarber.name,
+        date: selectedSlot.date,
+        startTime: selectedSlot.startTime,
+        endTime: selectedSlot.endTime,
+        customerName: customerName.trim(),
+        phone: phone.trim(),
+        status: "confirmed",
+        type: "salon",
+      });
+      resetDraft();
+      router.push("/booking/confirm");
+    }, 350);
+  };
 
   return (
     <main className="min-h-screen bg-striglo-grid">
@@ -132,7 +212,7 @@ export default function BookingPage() {
                     aria-pressed={selected}
                     onClick={() => setService(service.id)}
                     className={cn(
-                      "min-w-max rounded-2xl border px-4 py-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80",
+                      "min-w-max rounded-2xl border px-4 py-3 text-left transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80",
                       selected
                         ? "border-accent bg-accent text-white shadow-glow"
                         : "border-white/10 bg-white/[0.04] text-foreground hover:bg-white/[0.08]",
@@ -167,15 +247,15 @@ export default function BookingPage() {
           </div>
 
           {!selectedSlot && (
-            <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-4 text-sm text-muted">
-              Мастера появятся после выбора свободного времени.
-            </div>
+            <EmptyState
+              compact
+              title="Мастер появится после слота"
+              description="Так мы не показываем занятых или неподходящих мастеров."
+            />
           )}
 
           {selectedSlot && availableBarbers.length === 0 && (
-            <div className="rounded-3xl border border-dashed border-danger/30 bg-danger/10 p-4 text-sm text-foreground">
-              На это время нет доступного мастера. Выбери другой слот.
-            </div>
+            <InlineError>На это время нет доступного мастера. Выбери другой слот.</InlineError>
           )}
 
           {selectedSlot && availableBarbers.length === 1 && selectedBarber && (
@@ -208,8 +288,62 @@ export default function BookingPage() {
           )}
         </section>
 
-        <div className="mt-auto pb-safe-offset-4 pt-5">
-          <Card padding="sm" className="rounded-[1.75rem]">
+        {showContact && (
+          <motion.section
+            ref={contactRef}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-5 rounded-[2rem] border border-white/10 surface-panel p-5 shadow-card"
+          >
+            <h2 className="text-lg font-semibold text-foreground">Контактные данные</h2>
+            <p className="mt-1 text-sm text-muted">Нужны только имя и телефон для подтверждения.</p>
+            <form id="booking-contact-form" className="mt-4 space-y-4" onSubmit={handleSubmit}>
+              <label className="block space-y-2" htmlFor="booking-name">
+                <span className="text-sm font-medium text-foreground">Имя</span>
+                <input
+                  id="booking-name"
+                  value={customerName}
+                  onChange={(event) => {
+                    setCustomerName(event.target.value);
+                    setErrors((current) => ({ ...current, customerName: undefined }));
+                  }}
+                  className={cn(
+                    "min-h-14 w-full rounded-2xl border bg-white/[0.04] px-4 text-foreground outline-none transition-all placeholder:text-white/35 focus:border-accent focus:ring-2 focus:ring-accent/30",
+                    errors.customerName ? "border-danger/60" : "border-white/10",
+                  )}
+                  placeholder="Как к тебе обращаться?"
+                />
+                <InlineError>{errors.customerName}</InlineError>
+              </label>
+
+              <label className="block space-y-2" htmlFor="booking-phone">
+                <span className="text-sm font-medium text-foreground">Телефон</span>
+                <input
+                  id="booking-phone"
+                  inputMode="tel"
+                  value={phone}
+                  onChange={(event) => {
+                    setPhone(event.target.value);
+                    setErrors((current) => ({ ...current, phone: undefined }));
+                  }}
+                  className={cn(
+                    "min-h-14 w-full rounded-2xl border bg-white/[0.04] px-4 text-foreground outline-none transition-all placeholder:text-white/35 focus:border-accent focus:ring-2 focus:ring-accent/30",
+                    errors.phone ? "border-danger/60" : "border-white/10",
+                  )}
+                  placeholder="+375 29 123 45 67"
+                />
+                <InlineError>{errors.phone}</InlineError>
+              </label>
+
+              <Button type="submit" className="w-full" loading={isSubmitting}>
+                {isSubmitting ? "Сохраняем запись" : "Подтвердить запись"}
+              </Button>
+            </form>
+          </motion.section>
+        )}
+
+        <div className="mt-auto sticky bottom-0 -mx-4 bg-gradient-to-t from-background via-background/95 to-transparent px-4 pb-safe-offset-4 pt-5">
+          <Card padding="sm" className="rounded-[1.75rem] border-white/10">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs text-muted">Выбрано</p>
@@ -219,9 +353,16 @@ export default function BookingPage() {
                 <p className="mt-1 text-sm text-muted">
                   {selectedBarber ? selectedBarber.name : "Мастер не выбран"}
                 </p>
+                {!canContinue && <p className="mt-2 text-xs text-warning">{blockedReason}</p>}
               </div>
-              <Button size="sm" disabled={!canContinue}>
-                Продолжить
+              <Button
+                size="sm"
+                disabled={!canContinue}
+                onClick={showContact ? undefined : handleContinue}
+                type={showContact ? "submit" : "button"}
+                form={showContact ? "booking-contact-form" : undefined}
+              >
+                {showContact ? "Заполни форму" : "Продолжить"}
               </Button>
             </div>
           </Card>

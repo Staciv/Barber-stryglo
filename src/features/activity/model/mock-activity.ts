@@ -33,6 +33,17 @@ export type GoRequestActivity = {
   barberMessage?: string;
 };
 
+function toDateValue(date: Date) {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
+}
+
+function dateFromToday(offsetDays: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  return toDateValue(date);
+}
+
 export const upcomingBookings: ActivityBooking[] = [
   {
     id: "booking-upcoming-1",
@@ -40,7 +51,7 @@ export const upcomingBookings: ActivityBooking[] = [
     barberId: "amir",
     serviceTitle: "Стрижка",
     serviceId: "cut",
-    date: "2026-05-25",
+    date: dateFromToday(1),
     startTime: "12:00",
     endTime: "12:45",
     status: "confirmed",
@@ -52,7 +63,7 @@ export const upcomingBookings: ActivityBooking[] = [
     barberId: "maks",
     serviceTitle: "Стрижка + борода",
     serviceId: "cut-beard",
-    date: "2026-05-27",
+    date: dateFromToday(3),
     startTime: "19:00",
     endTime: "20:10",
     status: "pending",
@@ -67,7 +78,7 @@ export const pastVisits: ActivityBooking[] = [
     barberId: "roma",
     serviceTitle: "Стрижка",
     serviceId: "cut",
-    date: "2026-05-11",
+    date: dateFromToday(-13),
     startTime: "15:00",
     endTime: "15:45",
     status: "completed",
@@ -79,7 +90,7 @@ export const pastVisits: ActivityBooking[] = [
     barberId: "maks",
     serviceTitle: "Борода",
     serviceId: "beard",
-    date: "2026-04-28",
+    date: dateFromToday(-26),
     startTime: "18:30",
     endTime: "19:00",
     status: "completed",
@@ -94,7 +105,7 @@ export const activeGoRequests: GoRequestActivity[] = [
     serviceTitle: "Стрижка",
     serviceId: "cut",
     address: "ул. Центральная, 14",
-    proposedDate: "2026-05-26",
+    proposedDate: dateFromToday(2),
     proposedTime: "20:00",
     status: "accepted",
   },
@@ -104,7 +115,7 @@ export const activeGoRequests: GoRequestActivity[] = [
     serviceTitle: "Стрижка + борода",
     serviceId: "cut-beard",
     address: "ул. Парковая, 8",
-    proposedDate: "2026-05-28",
+    proposedDate: dateFromToday(4),
     proposedTime: "19:30",
     status: "proposed_new_time",
     barberMessage: "Могу приехать в 20:15 вместо 19:30.",
@@ -114,7 +125,7 @@ export const activeGoRequests: GoRequestActivity[] = [
     serviceTitle: "Борода",
     serviceId: "beard",
     address: "пр-т Молодёжный, 3",
-    proposedDate: "2026-05-29",
+    proposedDate: dateFromToday(5),
     proposedTime: "18:00",
     status: "pending",
   },

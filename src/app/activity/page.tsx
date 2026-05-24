@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
+import { useAppointmentStore } from "@/entities/booking/appointment-store";
 import {
   activeGoRequests,
   pastVisits,
@@ -19,6 +21,24 @@ import { Card } from "@/shared/ui/card";
 export default function ActivityPage() {
   const router = useRouter();
   const setService = useBookingDraftStore((state) => state.setService);
+  const appointments = useAppointmentStore((state) => state.appointments);
+  const persistedBookings = useMemo(
+    () =>
+      appointments.map((appointment) => ({
+        id: appointment.id,
+        barberName: appointment.barberName,
+        barberId: appointment.barberId,
+        serviceTitle: appointment.serviceTitle,
+        serviceId: appointment.serviceId,
+        date: appointment.date,
+        startTime: appointment.startTime,
+        endTime: appointment.endTime,
+        status: appointment.status,
+        type: appointment.type,
+      })),
+    [appointments],
+  );
+  const displayedUpcomingBookings = [...persistedBookings, ...upcomingBookings];
 
   const handleRepeatBooking = (booking: ActivityBooking) => {
     setService(booking.serviceId);
@@ -67,7 +87,7 @@ export default function ActivityPage() {
         <Card padding="sm" className="mt-5 rounded-3xl">
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
-              <p className="text-xl font-black text-foreground">{upcomingBookings.length}</p>
+              <p className="text-xl font-black text-foreground">{displayedUpcomingBookings.length}</p>
               <p className="mt-1 text-xs text-muted">впереди</p>
             </div>
             <div>
@@ -85,12 +105,12 @@ export default function ActivityPage() {
           <ActivitySection
             title="Ближайшие"
             subtitle="Записи, которые ещё впереди."
-            empty={upcomingBookings.length === 0}
+            empty={displayedUpcomingBookings.length === 0}
             emptyTitle="Пока нет будущих записей"
             emptyText="Следующую стрижку можно забронировать за несколько секунд."
-            action={<Badge variant="success">{upcomingBookings.length}</Badge>}
+            action={<Badge variant="success">{displayedUpcomingBookings.length}</Badge>}
           >
-            {upcomingBookings.map((booking) => (
+            {displayedUpcomingBookings.map((booking) => (
               <ActivityCard key={booking.id} booking={booking} />
             ))}
           </ActivitySection>

@@ -40,13 +40,24 @@ export type BarberScheduleItem = {
   isGoAvailable: boolean;
 };
 
+function toDateValue(date: Date) {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
+}
+
+function dateFromToday(offsetDays: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  return toDateValue(date);
+}
+
 export const todayBookings: BarberDashboardBooking[] = [
   {
     id: "today-1",
     clientName: "Илья",
     clientPhone: "+375 29 111-22-33",
     serviceTitle: "Стрижка",
-    date: "2026-05-24",
+    date: dateFromToday(0),
     startTime: "10:00",
     endTime: "10:45",
     status: "confirmed",
@@ -57,7 +68,7 @@ export const todayBookings: BarberDashboardBooking[] = [
     clientName: "Данила",
     clientPhone: "+375 33 444-55-66",
     serviceTitle: "Стрижка + борода",
-    date: "2026-05-24",
+    date: dateFromToday(0),
     startTime: "15:00",
     endTime: "16:10",
     status: "pending",
@@ -67,7 +78,7 @@ export const todayBookings: BarberDashboardBooking[] = [
     id: "today-3",
     clientName: "Артём",
     serviceTitle: "Борода",
-    date: "2026-05-24",
+    date: dateFromToday(0),
     startTime: "20:00",
     endTime: "20:30",
     status: "confirmed",
@@ -82,7 +93,7 @@ export const upcomingBarberBookings: BarberDashboardBooking[] = [
     clientName: "Максим",
     clientPhone: "+375 44 700-80-90",
     serviceTitle: "Стрижка",
-    date: "2026-05-25",
+    date: dateFromToday(1),
     startTime: "12:00",
     endTime: "12:45",
     status: "confirmed",
@@ -92,7 +103,7 @@ export const upcomingBarberBookings: BarberDashboardBooking[] = [
     id: "upcoming-2",
     clientName: "Никита",
     serviceTitle: "Стрижка + борода",
-    date: "2026-05-27",
+    date: dateFromToday(3),
     startTime: "18:30",
     endTime: "19:40",
     status: "confirmed",
@@ -108,7 +119,7 @@ export const initialBarberGoRequests: BarberGoRequest[] = [
     clientPhone: "+375 29 777-10-10",
     serviceTitle: "Стрижка",
     address: "пр-т Молодёжный, 3",
-    proposedDate: "2026-05-26",
+    proposedDate: dateFromToday(2),
     proposedTime: "19:30",
     status: "pending",
     clientMessage: "Лучше после работы, можно чуть позже.",
@@ -118,7 +129,7 @@ export const initialBarberGoRequests: BarberGoRequest[] = [
     clientName: "Кирилл",
     serviceTitle: "Борода",
     address: "ул. Садовая, 21",
-    proposedDate: "2026-05-28",
+    proposedDate: dateFromToday(4),
     proposedTime: "20:00",
     status: "pending",
   },

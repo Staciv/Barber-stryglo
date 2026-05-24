@@ -35,22 +35,23 @@ export function BottomSheet({ open, onClose, title, children, className }: Botto
         <>
           <motion.button
             type="button"
-            aria-label="Close sheet overlay"
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            aria-label="Закрыть нижнюю панель"
+            className="fixed inset-0 z-40 bg-black/65 backdrop-blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
             onClick={onClose}
           />
 
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-label={title ?? "Bottom sheet"}
+            aria-label={title ?? "Нижняя панель"}
             initial={{ y: "100%", opacity: 0.92 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0.92 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
               "fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md rounded-t-[2rem] border border-white/10 surface-panel-elevated px-4 pb-safe-offset-4 pt-4 shadow-card",
               className,
@@ -61,8 +62,8 @@ export function BottomSheet({ open, onClose, title, children, className }: Botto
               <div>
                 {title && <h2 className="text-lg font-semibold text-foreground">{title}</h2>}
               </div>
-              <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close bottom sheet">
-                Close
+              <Button variant="ghost" size="sm" onClick={onClose} aria-label="Закрыть нижнюю панель">
+                Закрыть
               </Button>
             </div>
             <div>{children}</div>

@@ -1,0 +1,26 @@
+import Link from "next/link";
+import { Badge } from "@/shared/ui/badge";
+import { Card } from "@/shared/ui/card";
+
+export default function RecommendationPage() {
+  return (
+    <main className="min-h-screen bg-striglo-grid">
+      <div className="mx-auto w-full max-w-md px-4 pb-safe-offset-4 pt-safe-offset-6">
+        <section className="rounded-[2rem] border border-white/10 surface-panel p-5 shadow-card">
+          <Badge variant="accent">Style match</Badge>
+          <h1 className="mt-4 text-3xl font-black text-foreground">Подбор стрижки</h1>
+          <p className="mt-3 text-sm leading-6 text-muted">
+            Mock-экран для будущей рекомендации по фото. AI и загрузка файлов пока не подключены.
+          </p>
+          <Link href="/booking" className="mt-5 inline-flex min-h-14 w-full items-center justify-center rounded-[1.25rem] bg-accent font-semibold text-white">
+            Перейти к записи
+          </Link>
+        </section>
+        <Card className="mt-5">
+          <p className="text-sm font-semibold text-foreground">Рекомендаций пока нет</p>
+          <p className="mt-1 text-sm text-muted">Здесь появится подбор образа после подключения mock/AI flow.</p>
+        </Card>
+      </div>
+    </main>
+  );
+}

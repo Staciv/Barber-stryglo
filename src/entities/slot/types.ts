@@ -4,6 +4,7 @@ export type Slot = {
   startTime: string;
   endTime: string;
   barberId?: string;
+  maxDurationMinutes: number;
   isAvailable: boolean;
 };
 
