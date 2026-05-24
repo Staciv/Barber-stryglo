@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --background: 13 14 17;
+  --foreground: 245 247 250;
+  --muted: 141 152 169;
+  --accent: 242 110 30;
+  --accent-cold: 97 219 255;
+  --surface: 20 23 28;
+  --surface-elevated: 28 32 38;
+  --surface-strong: 35 40 48;
+  --border: 255 255 255;
+  --ring: 242 110 30;
+  --success: 70 198 138;
+  --warning: 255 184 77;
+  --danger: 255 99 99;
+  --disabled: 92 101 115;
+  --safe-offset-top: max(1.5rem, env(safe-area-inset-top));
+  --safe-offset-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  --space-section: 1.25rem;
+  --radius-card: 1.75rem;
+  --radius-control: 1.25rem;
+}
+
+@layer base {
+  * {
+    @apply border-border/20;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top, rgba(242, 110, 30, 0.08), transparent 24%),
+      radial-gradient(circle at 82% 8%, rgba(97, 219, 255, 0.08), transparent 18%),
+      linear-gradient(180deg, #111316 0%, #0c0d10 100%);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  ::selection {
+    background: rgba(242, 110, 30, 0.28);
+  }
+}
+
+@layer utilities {
+  .pt-safe-offset-6 {
+    padding-top: calc(var(--safe-offset-top) + 0.75rem);
+  }
+
+  .pb-safe-offset-4 {
+    padding-bottom: calc(var(--safe-offset-bottom) + 1rem);
+  }
+
+  .surface-stroke {
+    border-color: rgba(var(--border), 0.09);
+  }
+
+  .surface-panel {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)),
+      rgba(var(--surface), 0.9);
+  }
+
+  .surface-panel-elevated {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
+      rgba(var(--surface-elevated), 0.92);
+  }
+}
