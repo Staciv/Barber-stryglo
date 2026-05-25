@@ -3,11 +3,11 @@
 import {
   Header,
   HeroCard,
-  StrigloGoCard,
   FeatureCards,
   RepeatBookingCard,
   TrustStrip,
 } from "@/widgets/landing";
+import { GoRideButton } from "@/features/go-request/ui/go-ride-button";
 
 export default function HomePage() {
   return (
@@ -15,7 +15,9 @@ export default function HomePage() {
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-safe-offset-4 pt-safe-offset-6 md:max-w-2xl lg:max-w-3xl">
         <Header />
         <HeroCard />
-        <StrigloGoCard />
+        <div className="mt-4">
+          <GoRideButton />
+        </div>
         <FeatureCards />
         <RepeatBookingCard />
         <TrustStrip />
