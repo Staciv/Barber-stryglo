@@ -11,7 +11,7 @@ const cardVariants = cva(
         elevated: "surface-panel-elevated",
       },
       interactive: {
-        true: "cursor-pointer hover:-translate-y-0.5 hover:border-white/15",
+        true: "cursor-pointer hover:-translate-y-0.5 hover:border-white/20",
         false: "",
       },
       padding: {

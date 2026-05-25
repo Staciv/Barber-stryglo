@@ -27,19 +27,19 @@ const config: Config = {
         disabled: "rgb(var(--disabled) / <alpha-value>)",
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(255,122,24,0.18), 0 18px 44px rgba(255,122,24,0.18)",
+        glow: "0 0 0 1px rgba(255,106,0,0.2), 0 16px 38px rgba(255,106,0,0.14)",
         card: "0 24px 80px rgba(0, 0, 0, 0.34)",
         cyan: "0 0 0 1px rgba(74,222,255,0.12), 0 10px 28px rgba(74,222,255,0.12)",
         inset: "inset 0 1px 0 rgba(255,255,255,0.05)",
       },
       backgroundImage: {
         "striglo-grid":
-          "radial-gradient(circle at top, rgba(255,122,24,0.18), transparent 30%), radial-gradient(circle at 80% 10%, rgba(74,222,255,0.10), transparent 18%), linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px)",
+          "radial-gradient(circle at 20% 0%, rgba(255,122,24,0.18), transparent 30%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.04), transparent 25%), linear-gradient(180deg, #11100E 0%, #060606 65%, #030303 100%), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px)",
         "surface-glow":
           "linear-gradient(135deg, rgba(255,122,24,0.14), rgba(74,222,255,0.08) 55%, transparent 100%)",
       },
       backgroundSize: {
-        "striglo-grid": "auto, auto, 28px 28px, 28px 28px",
+        "striglo-grid": "auto, auto, auto, 40px 40px, 40px 40px",
       },
       fontFamily: {
         sans: ["'SF Pro Display'", "'Inter'", "'Segoe UI'", "system-ui", "sans-serif"],

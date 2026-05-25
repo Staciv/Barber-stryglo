@@ -22,6 +22,8 @@ describe("booking draft store", () => {
       selectedSlot: undefined,
       selectedBarberId: undefined,
       selectedServiceId: "cut",
+      contactPhone: "",
+      isContactPhoneVerified: false,
     });
   });
 
@@ -57,6 +59,24 @@ describe("booking draft store", () => {
       selectedSlot: undefined,
       selectedBarberId: undefined,
       selectedServiceId: "cut",
+      contactPhone: "",
+      isContactPhoneVerified: false,
+    });
+  });
+
+  it("stores booking contact phone and verification state", () => {
+    useBookingDraftStore.getState().setContactPhone("+375291234567", true);
+
+    expect(useBookingDraftStore.getState()).toMatchObject({
+      contactPhone: "+375291234567",
+      isContactPhoneVerified: true,
+    });
+
+    useBookingDraftStore.getState().setContactPhone("+375331234567");
+
+    expect(useBookingDraftStore.getState()).toMatchObject({
+      contactPhone: "+375331234567",
+      isContactPhoneVerified: false,
     });
   });
 });

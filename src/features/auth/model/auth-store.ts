@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { normalizeBelarusNationalPart } from "@/shared/lib/belarus-phone";
 
 export type MockUserRole = "client" | "barber" | "admin";
 
@@ -27,9 +28,11 @@ type AuthState = {
 };
 
 function createMockUser(phone: string): MockUser {
+  const normalizedPhone = normalizeBelarusNationalPart(phone);
+
   return {
-    id: `mock-client-${phone.replace(/\D/g, "") || "phone"}`,
-    phone,
+    id: `mock-client-${normalizedPhone.replace(/\D/g, "") || "phone"}`,
+    phone: normalizedPhone,
     role: "client",
   };
 }
@@ -42,7 +45,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       loginWithPhone: (phone) =>
         set({
-          pendingPhone: phone.trim(),
+          pendingPhone: normalizeBelarusNationalPart(phone),
         }),
       verifyOtp: (code) => {
         const pendingPhone = get().pendingPhone;

@@ -14,6 +14,13 @@ test("home page loads with booking CTA and STRIGLO branding", async ({ page }) =
 });
 
 test("booking mock flow creates a confirmed appointment", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByLabel("Телефон").fill("+375291234567");
+  await page.getByRole("button", { name: "Получить код" }).click();
+  await page.getByLabel("SMS-код").fill("1111");
+  await page.getByRole("button", { name: "Войти" }).click();
+  await expect(page).toHaveURL(/\/$/);
+
   await page.goto("/booking");
 
   await expect(page.getByRole("button", { name: /Продолжить/ })).toBeDisabled();
@@ -25,12 +32,9 @@ test("booking mock flow creates a confirmed appointment", async ({ page }) => {
   }
 
   await page.getByRole("button", { name: "Продолжить" }).click();
+  await expect(page.getByText("Проверенный телефон")).toBeVisible();
+  await expect(page.getByText("+375291234567")).toBeVisible();
   await page.locator("#booking-name").fill("QA Клиент");
-  await page.locator("#booking-phone").fill("+48123123123");
-  await page.getByRole("button", { name: "Подтвердить запись" }).click();
-  await expect(page.getByText(/белорусский номер/)).toBeVisible();
-
-  await page.locator("#booking-phone").fill("+375291234567");
   await page.locator("#booking-comment").fill("Тестовый комментарий");
   await page.getByRole("button", { name: "Подтвердить запись" }).click();
 
@@ -72,7 +76,14 @@ test("booking contact form requires name and Belarus phone", async ({ page }) =>
   await page.locator("#booking-name").fill("QA Клиент");
   await page.locator("#booking-phone").fill("12345");
   await page.getByRole("button", { name: "Подтвердить запись" }).click();
-  await expect(page.getByText(/белорусский номер/)).toBeVisible();
+  await expect(page.getByText(/Номер должен содержать|белорусский номер/)).toBeVisible();
+
+  await page.locator("#booking-phone").fill("+375331234567");
+  await page.getByRole("button", { name: "Подтвердить запись" }).click();
+  await expect(page.getByText(/Подтверди телефон/)).toBeVisible();
+  await page.getByLabel("SMS-код").fill("1111");
+  await page.getByRole("button", { name: "Подтвердить телефон" }).click();
+  await expect(page.getByText(/Подтверди телефон/)).not.toBeVisible();
 });
 
 test("mock login rejects wrong OTP and accepts 1111", async ({ page }) => {
@@ -93,11 +104,22 @@ test("mock login rejects wrong OTP and accepts 1111", async ({ page }) => {
 });
 
 test("STRIGLO GO mock flow submits a premium request", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByLabel("Телефон").fill("+375291234567");
+  await page.getByRole("button", { name: "Получить код" }).click();
+  await page.getByLabel("SMS-код").fill("1111");
+  await page.getByRole("button", { name: "Войти" }).click();
+  await expect(page).toHaveURL(/\/$/);
+
   await page.goto("/go");
 
   await expect(page.getByRole("heading", { name: "Выездная стрижка" })).toBeVisible();
   await page.getByRole("button", { name: /Предложить своё время/ }).click();
-  await page.getByLabel("Своё время").fill("18:30");
+  await expect(page.getByLabel("Телефон")).toHaveValue("29 123 45 67");
+  await expect(page.getByLabel("Дата")).toBeVisible();
+  await page.getByLabel("Дата").selectOption({ index: 1 });
+  await page.getByLabel("Время").fill("18:30");
+  await expect(page.getByText(/Выезд:/)).toBeVisible();
   await page.getByRole("button", { name: /Мужская стрижка \+ борода/ }).click();
 
   const barberButtons = page.getByRole("button", { name: /Свободен/ });

@@ -2,10 +2,11 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { mockBarbers } from "@/entities/barber/mock";
 import { useAppointmentStore } from "@/entities/booking/appointment-store";
 import { mockServices } from "@/entities/service/mock";
+import { useAuthStore } from "@/features/auth/model/auth-store";
 import { Avatar } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -13,6 +14,7 @@ import { Card } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { InlineError } from "@/shared/ui/inline-error";
 import { isValidBelarusPhone } from "@/shared/lib/belarus-phone";
+import { PhoneInput } from "@/shared/ui/phone-input";
 import { cn } from "@/shared/lib/utils";
 
 type GoWindow = {
@@ -26,6 +28,7 @@ type GoErrors = {
   address?: string;
   customerName?: string;
   phone?: string;
+  customDate?: string;
   customTime?: string;
 };
 
@@ -46,14 +49,37 @@ function dateFromToday(offsetDays: number) {
   return toDateValue(date);
 }
 
+function formatGoDate(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  return new Intl.DateTimeFormat("ru-BY", {
+    day: "numeric",
+    month: "long",
+  }).format(date);
+}
+
+function getRelativeDateLabel(value: string) {
+  if (value === dateFromToday(0)) {
+    return `Сегодня, ${formatGoDate(value)}`;
+  }
+
+  if (value === dateFromToday(1)) {
+    return `Завтра, ${formatGoDate(value)}`;
+  }
+
+  return formatGoDate(value);
+}
+
 function getGoWindowDate(windowId: string) {
   return windowId === "evening-today" ? dateFromToday(0) : dateFromToday(1);
 }
 
 export default function GoPage() {
+  const userPhone = useAuthStore((state) => state.user?.phone);
   const createAppointment = useAppointmentStore((state) => state.createAppointment);
   const [selectedWindowId, setSelectedWindowId] = useState(goWindows[0].id);
   const [useCustomTime, setUseCustomTime] = useState(false);
+  const [customDate, setCustomDate] = useState(dateFromToday(0));
   const [customTime, setCustomTime] = useState("18:30");
   const [address, setAddress] = useState("");
   const [selectedServiceId, setSelectedServiceId] = useState(mockServices[0]?.id ?? "");
@@ -74,6 +100,26 @@ export default function GoPage() {
   );
   const selectedBarber = availableBarbers.find((barber) => barber.id === selectedBarberId);
   const selectedWindow = goWindows.find((window) => window.id === selectedWindowId) ?? goWindows[0];
+  const dateOptions = useMemo(
+    () => [0, 1, 2, 3].map((offset) => {
+      const value = dateFromToday(offset);
+      return {
+        value,
+        label: getRelativeDateLabel(value),
+      };
+    }),
+    [],
+  );
+  const selectedGoDate = useCustomTime ? customDate : getGoWindowDate(selectedWindow.id);
+  const selectedGoTime = useCustomTime ? customTime : selectedWindow.time;
+  const selectedGoDateLabel = selectedGoDate ? getRelativeDateLabel(selectedGoDate) : "";
+  const goSummary = `${selectedGoDateLabel} · ${selectedGoTime || "время не выбрано"}`;
+
+  useEffect(() => {
+    if (userPhone && !phone) {
+      setPhone(userPhone);
+    }
+  }, [phone, userPhone]);
 
   const handleServiceChange = (serviceId: string) => {
     setSelectedServiceId(serviceId);
@@ -91,13 +137,14 @@ export default function GoPage() {
 
     const nextErrors: GoErrors = {
       address: address.trim().length < 5 ? "Укажи адрес выезда" : undefined,
-      customerName: customerName.trim().length < 2 ? "Введите имя" : undefined,
+      customerName: customerName.trim().length < 2 ? "Укажи имя" : undefined,
       phone: !phone.trim()
-        ? "Введите телефон"
+        ? "Укажи номер телефона"
         : !isValidBelarusPhone(phone)
           ? "Введи белорусский номер: +375 29 123 45 67"
           : undefined,
-      customTime: useCustomTime && !customTime ? "Выбери время" : undefined,
+      customDate: useCustomTime && !customDate ? "Выбери дату выезда" : undefined,
+      customTime: useCustomTime && !customTime ? "Выбери время выезда" : undefined,
     };
 
     setErrors(nextErrors);
@@ -106,6 +153,7 @@ export default function GoPage() {
       nextErrors.address ||
       nextErrors.customerName ||
       nextErrors.phone ||
+      nextErrors.customDate ||
       nextErrors.customTime ||
       !selectedService ||
       !selectedBarber
@@ -120,8 +168,8 @@ export default function GoPage() {
         serviceName: selectedService.name,
         barberId: selectedBarber.id,
         barberName: selectedBarber.name,
-        date: useCustomTime ? dateFromToday(1) : getGoWindowDate(selectedWindow.id),
-        startTime: useCustomTime ? customTime : selectedWindow.time,
+        date: selectedGoDate,
+        startTime: selectedGoTime,
         clientName: customerName.trim(),
         clientPhone: phone.trim(),
         comment: address.trim(),
@@ -161,7 +209,7 @@ export default function GoPage() {
               </p>
             )}
             <p className="mt-3 text-sm text-muted">
-              {useCustomTime ? "Своё время" : selectedWindow.label} · {useCustomTime ? customTime : selectedWindow.time}
+              Выезд: {goSummary}
             </p>
             <p className="mt-1 text-sm text-muted">{address}</p>
             <p className="mt-1 text-sm text-muted">
@@ -201,8 +249,8 @@ export default function GoPage() {
           <Card>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-foreground">Окно выезда</h2>
-                <p className="mt-1 text-sm text-muted">Плановое окно или своё время.</p>
+                <h2 className="text-lg font-semibold text-foreground">Выбери дату и время выезда</h2>
+                <p className="mt-1 text-sm text-muted">Выбери готовый вариант или предложи своё время</p>
               </div>
               <Badge variant="warning">Mock</Badge>
             </div>
@@ -223,7 +271,7 @@ export default function GoPage() {
                     className={cn(
                       "min-h-14 rounded-2xl border px-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80",
                       selected
-                        ? "border-accent bg-accent text-white shadow-glow"
+                        ? "border-[rgba(255,106,0,0.9)] bg-accent text-white shadow-[0_0_0_1px_rgba(255,106,0,0.2)]"
                         : "border-white/10 bg-white/[0.04] text-foreground hover:bg-white/[0.08]",
                     )}
                   >
@@ -243,32 +291,57 @@ export default function GoPage() {
               className={cn(
                 "mt-3 min-h-14 w-full rounded-2xl border px-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80",
                 useCustomTime
-                  ? "border-accent bg-accent/15 text-foreground shadow-glow"
+                  ? "border-[rgba(255,106,0,0.9)] bg-accent/15 text-foreground shadow-[0_0_0_1px_rgba(255,106,0,0.2)]"
                   : "border-white/10 bg-white/[0.04] text-foreground hover:bg-white/[0.08]",
               )}
             >
               <span className="block text-sm font-semibold">Предложить своё время</span>
-              <span className="mt-1 block text-xs text-muted">Мастер подтвердит или предложит другое.</span>
+              <span className="mt-1 block text-xs text-muted">Мастер подтвердит или предложит другое время</span>
             </button>
 
             {useCustomTime && (
-              <label className="mt-3 block space-y-2" htmlFor="go-custom-time">
-                <span className="text-sm font-medium text-foreground">Своё время</span>
-                <input
-                  id="go-custom-time"
-                  type="time"
-                  value={customTime}
-                  onChange={(event) => {
-                    setCustomTime(event.target.value);
-                    setErrors((current) => ({ ...current, customTime: undefined }));
-                  }}
-                  className={cn(
-                    "min-h-14 w-full rounded-2xl border bg-white/[0.04] px-4 text-foreground outline-none focus:border-accent focus:ring-2 focus:ring-accent/30",
-                    errors.customTime ? "border-danger/60" : "border-white/10",
-                  )}
-                />
-                <InlineError>{errors.customTime}</InlineError>
-              </label>
+              <div className="mt-3 grid gap-3">
+                <label className="block space-y-2" htmlFor="go-custom-date">
+                  <span className="text-sm font-medium text-foreground">Дата</span>
+                  <select
+                    id="go-custom-date"
+                    value={customDate}
+                    onChange={(event) => {
+                      setCustomDate(event.target.value);
+                      setErrors((current) => ({ ...current, customDate: undefined }));
+                    }}
+                    className={cn(
+                      "min-h-14 w-full rounded-2xl border bg-white/[0.04] px-4 text-foreground outline-none focus:border-accent focus:ring-2 focus:ring-accent/30",
+                      errors.customDate ? "border-danger/60" : "border-white/10",
+                    )}
+                  >
+                    {dateOptions.map((option) => (
+                      <option key={option.value} value={option.value} className="bg-background text-foreground">
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <InlineError>{errors.customDate}</InlineError>
+                </label>
+
+                <label className="block space-y-2" htmlFor="go-custom-time">
+                  <span className="text-sm font-medium text-foreground">Время</span>
+                  <input
+                    id="go-custom-time"
+                    type="time"
+                    value={customTime}
+                    onChange={(event) => {
+                      setCustomTime(event.target.value);
+                      setErrors((current) => ({ ...current, customTime: undefined }));
+                    }}
+                    className={cn(
+                      "min-h-14 w-full rounded-2xl border bg-white/[0.04] px-4 text-foreground outline-none focus:border-accent focus:ring-2 focus:ring-accent/30",
+                      errors.customTime ? "border-danger/60" : "border-white/10",
+                    )}
+                  />
+                  <InlineError>{errors.customTime}</InlineError>
+                </label>
+              </div>
             )}
           </Card>
 
@@ -287,7 +360,7 @@ export default function GoPage() {
                     className={cn(
                       "min-w-max rounded-2xl border px-4 py-3 text-left transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80",
                       selected
-                        ? "border-accent bg-accent text-white shadow-glow"
+                        ? "border-[rgba(255,106,0,0.9)] bg-accent text-white shadow-[0_0_0_1px_rgba(255,106,0,0.2)]"
                         : "border-white/10 bg-white/[0.04] text-foreground hover:bg-white/[0.08]",
                     )}
                   >
@@ -322,7 +395,7 @@ export default function GoPage() {
                     className={cn(
                       "flex w-full items-center gap-3 rounded-3xl border p-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80",
                       selected
-                        ? "border-accent bg-accent/15 shadow-glow"
+                        ? "border-[rgba(255,106,0,0.9)] bg-accent/15 shadow-[0_0_0_1px_rgba(255,106,0,0.2)]"
                         : "border-white/10 bg-white/[0.04] hover:bg-white/[0.08]",
                     )}
                   >
@@ -381,24 +454,34 @@ export default function GoPage() {
                 <InlineError>{errors.customerName}</InlineError>
               </label>
 
-              <label className="block space-y-2" htmlFor="go-phone">
-                <span className="text-sm font-medium text-foreground">Телефон</span>
-                <input
-                  id="go-phone"
-                  inputMode="tel"
-                  value={phone}
-                  onChange={(event) => {
-                    setPhone(event.target.value);
-                    setErrors((current) => ({ ...current, phone: undefined }));
-                  }}
-                  placeholder="+375 29 123 45 67"
-                  className={cn(
-                    "min-h-14 w-full rounded-2xl border bg-white/[0.04] px-4 text-foreground outline-none placeholder:text-white/35 focus:border-accent focus:ring-2 focus:ring-accent/30",
-                    errors.phone ? "border-danger/60" : "border-white/10",
-                  )}
-                />
-                <InlineError>{errors.phone}</InlineError>
-              </label>
+              <PhoneInput
+                id="go-phone"
+                value={phone}
+                onChange={(nextPhone) => {
+                  setPhone(nextPhone);
+                  setErrors((current) => ({ ...current, phone: undefined }));
+                }}
+                error={errors.phone}
+                description="На этот номер мастер свяжется для подтверждения."
+              />
+            </div>
+          </Card>
+
+          <Card padding="sm" className="rounded-[1.75rem]">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-base font-semibold text-foreground">Заявка</h2>
+                <p className="mt-1 text-sm text-muted">Проверь детали перед отправкой.</p>
+              </div>
+              <Badge variant="accent">GO</Badge>
+            </div>
+            <div className="mt-4 grid gap-2 text-sm">
+              <p className="text-foreground"><span className="text-muted">Выезд:</span> {goSummary}</p>
+              <p className="text-foreground"><span className="text-muted">Услуга:</span> {selectedService?.name ?? "Не выбрана"}</p>
+              <p className="text-foreground"><span className="text-muted">Мастер:</span> {selectedBarber?.name ?? "Не выбран"}</p>
+              <p className="text-foreground"><span className="text-muted">Адрес:</span> {address.trim() || "Не указан"}</p>
+              <p className="text-foreground"><span className="text-muted">Имя:</span> {customerName.trim() || "Не указано"}</p>
+              <p className="text-foreground"><span className="text-muted">Телефон:</span> {phone.trim() || "Не указан"}</p>
             </div>
           </Card>
 

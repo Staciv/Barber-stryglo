@@ -9,6 +9,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { InlineError } from "@/shared/ui/inline-error";
+import { PhoneInput } from "@/shared/ui/phone-input";
 import { cn } from "@/shared/lib/utils";
 
 type LoginStep = "phone" | "otp";
@@ -115,26 +116,15 @@ export default function LoginPage() {
 
           {step === "phone" ? (
             <form onSubmit={handlePhoneSubmit} className="space-y-4">
-              <label className="block space-y-2" htmlFor="login-phone">
-                <span className="text-sm font-medium text-foreground">Телефон</span>
-                <input
-                  id="login-phone"
-                  inputMode="tel"
-                  autoComplete="tel"
-                  value={phone}
-                  onChange={(event) => {
-                    setPhone(event.target.value);
-                    setError("");
-                  }}
-                  placeholder="+375 29 123 45 67"
-                  className={cn(
-                    "min-h-14 w-full rounded-2xl border bg-white/[0.04] px-4 text-base text-foreground outline-none transition-all placeholder:text-white/35 focus:border-accent focus:ring-2 focus:ring-accent/30",
-                    error ? "border-danger/60" : "border-white/10",
-                  )}
-                />
-              </label>
-
-              <InlineError>{error}</InlineError>
+              <PhoneInput
+                id="login-phone"
+                value={phone}
+                onChange={(nextPhone) => {
+                  setPhone(nextPhone);
+                  setError("");
+                }}
+                error={error}
+              />
 
               <Button type="submit" className="w-full" size="lg">
                 Получить код

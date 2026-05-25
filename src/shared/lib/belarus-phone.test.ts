@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { isValidBelarusPhone, normalizeBelarusPhone } from "./belarus-phone";
+import {
+  extractBelarusNationalPart,
+  formatBelarusNationalPart,
+  isValidBelarusPhone,
+  normalizeBelarusNationalPart,
+  normalizeBelarusPhone,
+  validateBelarusNationalPart,
+} from "./belarus-phone";
 
 describe("Belarus phone validation", () => {
   it.each([
@@ -21,5 +28,26 @@ describe("Belarus phone validation", () => {
 
   it("normalizes spaces, dashes and parentheses", () => {
     expect(normalizeBelarusPhone("+375 (29) 123-45-67")).toBe("+375291234567");
+  });
+
+  it("formats the national part as XX XXX XX XX", () => {
+    expect(formatBelarusNationalPart("291234567")).toBe("29 123 45 67");
+    expect(formatBelarusNationalPart("+375331112233")).toBe("33 111 22 33");
+  });
+
+  it("extracts the national part from supported Belarus formats", () => {
+    expect(extractBelarusNationalPart("+375 44 123 45 67")).toBe("441234567");
+    expect(extractBelarusNationalPart("80291234567")).toBe("291234567");
+  });
+
+  it("normalizes to +375XXXXXXXXX", () => {
+    expect(normalizeBelarusNationalPart("29 123 45 67")).toBe("+375291234567");
+  });
+
+  it("returns an operator-code validation error", () => {
+    expect(validateBelarusNationalPart("991234567")).toMatchObject({
+      isValid: false,
+      error: "Код оператора должен быть 25, 29, 33 или 44",
+    });
   });
 });
