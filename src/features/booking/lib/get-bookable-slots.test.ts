@@ -5,8 +5,8 @@ import type { Slot } from "@/entities/slot/types";
 import { getBookableSlots } from "./get-bookable-slots";
 
 const services: Record<string, Service> = {
-  cut: { id: "cut", name: "Стрижка", durationMinutes: 45, priceByn: 45 },
-  combo: { id: "combo", name: "Стрижка + борода", durationMinutes: 70, priceByn: 70 },
+  cut: { id: "cut", name: "Мужская стрижка", durationMinutes: 45, priceByn: 45 },
+  combo: { id: "combo", name: "Мужская стрижка + борода", durationMinutes: 70, priceByn: 70 },
 };
 
 const barbers: BarberProfile[] = [

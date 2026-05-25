@@ -19,11 +19,8 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { InlineError } from "@/shared/ui/inline-error";
+import { isValidBelarusPhone } from "@/shared/lib/belarus-phone";
 import { cn } from "@/shared/lib/utils";
-
-function isPhoneValid(phone: string) {
-  return /^[+\d\s()-]{8,}$/.test(phone.trim());
-}
 
 function BarberCard({
   barber,
@@ -76,6 +73,7 @@ export default function BookingPage() {
   const [showContact, setShowContact] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
+  const [comment, setComment] = useState("");
   const [errors, setErrors] = useState<{ customerName?: string; phone?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const selectedService = mockServices.find((service) => service.id === selectedServiceId);
@@ -139,10 +137,17 @@ export default function BookingPage() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) {
+      return;
+    }
 
     const nextErrors = {
       customerName: customerName.trim().length < 2 ? "Введите имя" : undefined,
-      phone: !phone.trim() ? "Введите телефон" : !isPhoneValid(phone) ? "Неверный формат телефона" : undefined,
+      phone: !phone.trim()
+        ? "Введите телефон"
+        : !isValidBelarusPhone(phone)
+          ? "Введи белорусский номер: +375 29 123 45 67"
+          : undefined,
     };
     setErrors(nextErrors);
 
@@ -154,14 +159,17 @@ export default function BookingPage() {
     window.setTimeout(() => {
       createAppointment({
         serviceId: selectedService.id,
-        serviceTitle: selectedService.name,
+        serviceName: selectedService.name,
         barberId: selectedBarber.id,
         barberName: selectedBarber.name,
         date: selectedSlot.date,
         startTime: selectedSlot.startTime,
         endTime: selectedSlot.endTime,
-        customerName: customerName.trim(),
-        phone: phone.trim(),
+        clientName: customerName.trim(),
+        clientPhone: phone.trim(),
+        comment: comment.trim() || undefined,
+        priceByn: selectedService.priceByn,
+        durationMinutes: selectedService.durationMinutes,
         status: "confirmed",
         type: "salon",
       });
@@ -335,6 +343,17 @@ export default function BookingPage() {
                 <InlineError>{errors.phone}</InlineError>
               </label>
 
+              <label className="block space-y-2" htmlFor="booking-comment">
+                <span className="text-sm font-medium text-foreground">Комментарий</span>
+                <textarea
+                  id="booking-comment"
+                  value={comment}
+                  onChange={(event) => setComment(event.target.value)}
+                  className="min-h-24 w-full resize-none rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-foreground outline-none transition-all placeholder:text-white/35 focus:border-accent focus:ring-2 focus:ring-accent/30"
+                  placeholder="Например: коротко по бокам"
+                />
+              </label>
+
               <Button type="submit" className="w-full" loading={isSubmitting}>
                 {isSubmitting ? "Сохраняем запись" : "Подтвердить запись"}
               </Button>
@@ -357,7 +376,7 @@ export default function BookingPage() {
               </div>
               <Button
                 size="sm"
-                disabled={!canContinue}
+                disabled={!canContinue || isSubmitting}
                 onClick={showContact ? undefined : handleContinue}
                 type={showContact ? "submit" : "button"}
                 form={showContact ? "booking-contact-form" : undefined}

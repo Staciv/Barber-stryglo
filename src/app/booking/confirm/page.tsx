@@ -5,14 +5,18 @@ import Link from "next/link";
 import { useAppointmentStore } from "@/entities/booking/appointment-store";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { FadeIn, MotionCard } from "@/shared/ui/motion";
 
 export default function BookingConfirmPage() {
   const appointments = useAppointmentStore((state) => state.appointments);
   const lastAppointmentId = useAppointmentStore((state) => state.lastAppointmentId);
-  const appointment = appointments.find((item) => item.id === lastAppointmentId) ?? appointments[0];
+  const appointment = appointments.find((item) => item.id === lastAppointmentId);
+  const statusLabel = appointment?.status === "pending"
+    ? "Ожидает подтверждения"
+    : appointment?.status === "cancelled"
+      ? "Отменена"
+      : "Подтверждена";
 
   return (
     <main className="min-h-screen bg-striglo-grid">
@@ -40,13 +44,24 @@ export default function BookingConfirmPage() {
         {appointment ? (
           <MotionCard className="mt-5" delay={0.06}>
             <p className="text-sm text-muted">Твоя запись</p>
-            <div className="mt-4 space-y-3 text-foreground">
-              <p className="text-xl font-black">{appointment.serviceTitle}</p>
-              <p>{appointment.barberName}</p>
-              <p>
-                {appointment.date} · {appointment.startTime}-{appointment.endTime}
-              </p>
-              <p className="text-muted">{appointment.customerName} · {appointment.phone}</p>
+            <div className="mt-4 space-y-3 text-sm text-foreground">
+              <p className="text-xl font-black">{appointment.serviceName}</p>
+              <div className="grid gap-2 rounded-2xl border border-white/10 bg-black/20 p-3">
+                <p><span className="text-muted">Мастер:</span> {appointment.barberName}</p>
+                <p><span className="text-muted">Дата:</span> {appointment.date}</p>
+                <p>
+                  <span className="text-muted">Время:</span> {appointment.startTime}
+                  {appointment.endTime ? `-${appointment.endTime}` : ""}
+                </p>
+                <p><span className="text-muted">Длительность:</span> {appointment.durationMinutes} мин</p>
+                <p><span className="text-muted">Цена:</span> {appointment.priceByn} BYN</p>
+                <p><span className="text-muted">Клиент:</span> {appointment.clientName}</p>
+                <p><span className="text-muted">Телефон:</span> {appointment.clientPhone}</p>
+                {appointment.comment && (
+                  <p><span className="text-muted">Комментарий:</span> {appointment.comment}</p>
+                )}
+                <p><span className="text-muted">Статус:</span> {statusLabel}</p>
+              </div>
             </div>
           </MotionCard>
         ) : (

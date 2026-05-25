@@ -43,7 +43,7 @@ export function ActivityCard({ booking, onRepeat }: ActivityCardProps) {
           <div className="flex min-w-0 items-center gap-3">
             <Avatar fallback={booking.barberName} size="md" />
             <div className="min-w-0">
-              <p className="truncate text-base font-semibold text-foreground">{booking.serviceTitle}</p>
+              <p className="truncate text-base font-semibold text-foreground">{booking.serviceName}</p>
               <p className="mt-1 text-sm text-muted">{booking.barberName}</p>
             </div>
           </div>
@@ -55,7 +55,11 @@ export function ActivityCard({ booking, onRepeat }: ActivityCardProps) {
 
         <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3">
           <p className="text-sm font-semibold text-foreground">
-            {booking.date} · {booking.startTime}-{booking.endTime}
+            {booking.date} · {booking.startTime}
+            {booking.endTime ? `-${booking.endTime}` : ""}
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            {booking.durationMinutes} мин · {booking.priceByn} BYN
           </p>
           {booking.address && <p className="mt-1 text-sm text-muted">{booking.address}</p>}
         </div>

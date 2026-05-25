@@ -3,13 +3,13 @@ import type { Service } from "./types";
 export const mockServices: Service[] = [
   {
     id: "cut",
-    name: "Стрижка",
+    name: "Мужская стрижка",
     durationMinutes: 45,
     priceByn: 45,
   },
   {
     id: "cut-beard",
-    name: "Стрижка + борода",
+    name: "Мужская стрижка + борода",
     durationMinutes: 70,
     priceByn: 70,
   },

@@ -4,13 +4,15 @@ export type ActivityBooking = {
   id: string;
   barberName: string;
   barberId: string;
-  serviceTitle: string;
+  serviceName: string;
   serviceId: string;
   date: string;
   startTime: string;
-  endTime: string;
+  endTime?: string;
   status: ActivityBookingStatus;
   type: "salon" | "go";
+  priceByn: number;
+  durationMinutes: number;
   address?: string;
 };
 
@@ -44,65 +46,15 @@ function dateFromToday(offsetDays: number) {
   return toDateValue(date);
 }
 
-export const upcomingBookings: ActivityBooking[] = [
-  {
-    id: "booking-upcoming-1",
-    barberName: "Амир",
-    barberId: "amir",
-    serviceTitle: "Стрижка",
-    serviceId: "cut",
-    date: dateFromToday(1),
-    startTime: "12:00",
-    endTime: "12:45",
-    status: "confirmed",
-    type: "salon",
-  },
-  {
-    id: "booking-upcoming-2",
-    barberName: "Макс",
-    barberId: "maks",
-    serviceTitle: "Стрижка + борода",
-    serviceId: "cut-beard",
-    date: dateFromToday(3),
-    startTime: "19:00",
-    endTime: "20:10",
-    status: "pending",
-    type: "salon",
-  },
-];
+export const upcomingBookings: ActivityBooking[] = [];
 
-export const pastVisits: ActivityBooking[] = [
-  {
-    id: "booking-past-1",
-    barberName: "Рома",
-    barberId: "roma",
-    serviceTitle: "Стрижка",
-    serviceId: "cut",
-    date: dateFromToday(-13),
-    startTime: "15:00",
-    endTime: "15:45",
-    status: "completed",
-    type: "salon",
-  },
-  {
-    id: "booking-past-2",
-    barberName: "Макс",
-    barberId: "maks",
-    serviceTitle: "Борода",
-    serviceId: "beard",
-    date: dateFromToday(-26),
-    startTime: "18:30",
-    endTime: "19:00",
-    status: "completed",
-    type: "salon",
-  },
-];
+export const pastVisits: ActivityBooking[] = [];
 
 export const activeGoRequests: GoRequestActivity[] = [
   {
     id: "go-request-1",
     barberName: "Амир",
-    serviceTitle: "Стрижка",
+    serviceTitle: "Мужская стрижка",
     serviceId: "cut",
     address: "ул. Центральная, 14",
     proposedDate: dateFromToday(2),
@@ -112,7 +64,7 @@ export const activeGoRequests: GoRequestActivity[] = [
   {
     id: "go-request-2",
     barberName: "Макс",
-    serviceTitle: "Стрижка + борода",
+    serviceTitle: "Мужская стрижка + борода",
     serviceId: "cut-beard",
     address: "ул. Парковая, 8",
     proposedDate: dateFromToday(4),

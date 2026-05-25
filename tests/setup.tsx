@@ -3,8 +3,8 @@ import React from "react";
 import { vi } from "vitest";
 
 vi.mock("framer-motion", async () => {
-  const createMock = (tag: React.ElementType) =>
-    React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement> & Record<string, unknown>>(
+  const createMock = (tag: React.ElementType) => {
+    const MockMotion = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement> & Record<string, unknown>>(
       (
         {
           children,
@@ -19,6 +19,10 @@ vi.mock("framer-motion", async () => {
         ref,
       ) => React.createElement(tag, { ...props, ref }, children),
     );
+    MockMotion.displayName = `MockMotion(${String(tag)})`;
+
+    return MockMotion;
+  };
 
   return {
     AnimatePresence: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),

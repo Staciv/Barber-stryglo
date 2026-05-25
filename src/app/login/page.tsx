@@ -48,6 +48,10 @@ export default function LoginPage() {
 
   const handleOtpSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) {
+      return;
+    }
+
     const result = otpSchema.safeParse(otp);
 
     if (!result.success) {

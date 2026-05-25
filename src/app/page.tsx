@@ -5,7 +5,6 @@ import { useAuthStore } from "@/features/auth/model/auth-store";
 import { GoRideButton } from "@/features/go-request/ui/go-ride-button";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
 import { FadeIn, MotionCard } from "@/shared/ui/motion";
 
 export default function HomePage() {

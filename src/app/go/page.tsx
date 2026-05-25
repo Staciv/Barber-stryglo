@@ -11,6 +11,7 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { InlineError } from "@/shared/ui/inline-error";
+import { isValidBelarusPhone } from "@/shared/lib/belarus-phone";
 import { cn } from "@/shared/lib/utils";
 
 type GoWindow = {
@@ -32,10 +33,6 @@ const goWindows: GoWindow[] = [
   { id: "tomorrow-day", label: "Завтра днём", date: "завтра", time: "14:00" },
   { id: "tomorrow-evening", label: "Завтра вечером", date: "завтра", time: "20:00" },
 ];
-
-function isPhoneValid(phone: string) {
-  return /^[+\d\s()-]{8,}$/.test(phone.trim());
-}
 
 export default function GoPage() {
   const [selectedWindowId, setSelectedWindowId] = useState(goWindows[0].id);
@@ -71,11 +68,18 @@ export default function GoPage() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) {
+      return;
+    }
 
     const nextErrors: GoErrors = {
       address: address.trim().length < 5 ? "Укажи адрес выезда" : undefined,
       customerName: customerName.trim().length < 2 ? "Введите имя" : undefined,
-      phone: !phone.trim() ? "Введите телефон" : !isPhoneValid(phone) ? "Неверный формат телефона" : undefined,
+      phone: !phone.trim()
+        ? "Введите телефон"
+        : !isValidBelarusPhone(phone)
+          ? "Введи белорусский номер: +375 29 123 45 67"
+          : undefined,
       customTime: useCustomTime && !customTime ? "Выбери время" : undefined,
     };
 
@@ -112,6 +116,11 @@ export default function GoPage() {
             <p className="text-sm text-muted">Детали</p>
             <p className="mt-2 text-lg font-semibold text-foreground">{selectedService?.name}</p>
             <p className="mt-1 text-sm text-muted">{selectedBarber?.name ?? "Мастер STRIGLO"}</p>
+            {selectedService && (
+              <p className="mt-1 text-sm text-muted">
+                {selectedService.priceByn} BYN · {selectedService.durationMinutes} мин
+              </p>
+            )}
             <p className="mt-3 text-sm text-muted">
               {useCustomTime ? "Своё время" : selectedWindow.label} · {useCustomTime ? customTime : selectedWindow.time}
             </p>

@@ -6,14 +6,11 @@ import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { useAppointmentStore } from "@/entities/booking/appointment-store";
 import {
-  activeGoRequests,
   pastVisits,
-  upcomingBookings,
   type ActivityBooking,
 } from "@/features/activity/model/mock-activity";
 import { ActivityCard } from "@/features/activity/ui/activity-card";
 import { ActivitySection } from "@/features/activity/ui/activity-section";
-import { GoRequestCard } from "@/features/activity/ui/go-request-card";
 import { useBookingDraftStore } from "@/features/booking/model/booking-draft-store";
 import { Badge } from "@/shared/ui/badge";
 import { Card } from "@/shared/ui/card";
@@ -28,17 +25,19 @@ export default function ActivityPage() {
         id: appointment.id,
         barberName: appointment.barberName,
         barberId: appointment.barberId,
-        serviceTitle: appointment.serviceTitle,
+        serviceName: appointment.serviceName,
         serviceId: appointment.serviceId,
         date: appointment.date,
         startTime: appointment.startTime,
         endTime: appointment.endTime,
         status: appointment.status,
         type: appointment.type,
+        priceByn: appointment.priceByn,
+        durationMinutes: appointment.durationMinutes,
       })),
     [appointments],
   );
-  const displayedUpcomingBookings = [...persistedBookings, ...upcomingBookings];
+  const displayedUpcomingBookings = persistedBookings;
 
   const handleRepeatBooking = (booking: ActivityBooking) => {
     setService(booking.serviceId);
@@ -66,7 +65,7 @@ export default function ActivityPage() {
             <Badge variant="accent">Timeline</Badge>
           </div>
           <p className="mt-4 text-sm leading-6 text-muted">
-            Ближайшие визиты, история и активные заявки STRIGLO GO в одном экране.
+            Твои реальные mock-записи из booking flow. Если записей нет, начни с новой записи.
           </p>
           <div className="mt-5 grid grid-cols-2 gap-3">
             <Link
@@ -95,7 +94,7 @@ export default function ActivityPage() {
               <p className="mt-1 text-xs text-muted">визита</p>
             </div>
             <div>
-              <p className="text-xl font-black text-foreground">{activeGoRequests.length}</p>
+              <p className="text-xl font-black text-foreground">0</p>
               <p className="mt-1 text-xs text-muted">GO</p>
             </div>
           </div>
@@ -106,8 +105,8 @@ export default function ActivityPage() {
             title="Ближайшие"
             subtitle="Записи, которые ещё впереди."
             empty={displayedUpcomingBookings.length === 0}
-            emptyTitle="Пока нет будущих записей"
-            emptyText="Следующую стрижку можно забронировать за несколько секунд."
+            emptyTitle="У тебя пока нет записей"
+            emptyText="Запишись на стрижку, и карточка появится здесь."
             action={<Badge variant="success">{displayedUpcomingBookings.length}</Badge>}
           >
             {displayedUpcomingBookings.map((booking) => (
@@ -118,15 +117,11 @@ export default function ActivityPage() {
           <ActivitySection
             title="STRIGLO GO"
             subtitle="Активные выездные заявки."
-            empty={activeGoRequests.length === 0}
+            empty
             emptyTitle="Нет активных GO заявок"
             emptyText="Когда появится выездная заявка, она будет здесь."
-            action={<Badge variant="accent">{activeGoRequests.length}</Badge>}
-          >
-            {activeGoRequests.map((request) => (
-              <GoRequestCard key={request.id} request={request} />
-            ))}
-          </ActivitySection>
+            action={<Badge variant="accent">0</Badge>}
+          />
 
           <ActivitySection
             title="История"

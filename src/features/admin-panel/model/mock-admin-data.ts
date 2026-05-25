@@ -38,7 +38,7 @@ export const mockAdminBarbers: AdminBarber[] = [
 export const mockAdminServices: AdminService[] = [
   {
     id: "cut",
-    title: "Стрижка",
+    title: "Мужская стрижка",
     description: "Чистая форма, укладка и финиш.",
     durationMinutes: 45,
     priceByn: 45,
@@ -46,7 +46,7 @@ export const mockAdminServices: AdminService[] = [
   },
   {
     id: "cut-beard",
-    title: "Стрижка + борода",
+    title: "Мужская стрижка + борода",
     description: "Полный сет: волосы, борода, контуры.",
     durationMinutes: 70,
     priceByn: 70,

@@ -10,7 +10,7 @@ type ActivitySectionProps = {
   emptyTitle: string;
   emptyText: string;
   action?: ReactNode;
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 export function ActivitySection({
