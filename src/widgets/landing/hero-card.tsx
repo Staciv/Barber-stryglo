@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Badge } from "@/shared/ui/badge";
+import { GoRideButton } from "@/features/go-request/ui/go-ride-button";
 
 export function HeroCard() {
   return (
@@ -35,13 +36,14 @@ export function HeroCard() {
           <p className="mt-4 text-sm md:text-base leading-6 text-muted text-pretty max-w-md">
             Выбери услугу, мастера и удобное время. Без звонков и долгих переписок.
           </p>
-          <div className="mt-6">
+          <div className="mt-6 flex flex-col gap-3">
             <Link
               href="/booking"
               className="inline-flex min-h-[56px] md:min-h-[64px] w-full md:w-auto items-center justify-center rounded-[20px] md:rounded-[24px] border border-accent/20 bg-gradient-to-b from-accent to-[#d45a10] px-8 text-base md:text-lg font-semibold text-white shadow-glow transition-all duration-200 hover:from-[#ff8a36] hover:to-accent active:scale-[0.98]"
             >
               Записаться
             </Link>
+            <GoRideButton />
           </div>
         </div>
       </div>
