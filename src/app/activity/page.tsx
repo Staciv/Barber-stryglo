@@ -5,10 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { useAppointmentStore } from "@/entities/booking/appointment-store";
-import {
-  pastVisits,
-  type ActivityBooking,
-} from "@/features/activity/model/mock-activity";
+import type { ActivityBooking } from "@/features/activity/model/mock-activity";
 import { ActivityCard } from "@/features/activity/ui/activity-card";
 import { ActivitySection } from "@/features/activity/ui/activity-section";
 import { useBookingDraftStore } from "@/features/booking/model/booking-draft-store";
@@ -19,7 +16,7 @@ export default function ActivityPage() {
   const router = useRouter();
   const setService = useBookingDraftStore((state) => state.setService);
   const appointments = useAppointmentStore((state) => state.appointments);
-  const persistedBookings = useMemo(
+  const persistedBookings: ActivityBooking[] = useMemo(
     () =>
       appointments.map((appointment) => ({
         id: appointment.id,
@@ -34,10 +31,17 @@ export default function ActivityPage() {
         type: appointment.type,
         priceByn: appointment.priceByn,
         durationMinutes: appointment.durationMinutes,
+        address: appointment.type === "go" ? appointment.comment : undefined,
       })),
     [appointments],
   );
-  const displayedUpcomingBookings = persistedBookings;
+  const displayedUpcomingBookings = persistedBookings.filter(
+    (booking) => booking.type === "salon" && booking.status !== "cancelled",
+  );
+  const goBookings = persistedBookings.filter(
+    (booking) => booking.type === "go" && booking.status !== "cancelled",
+  );
+  const pastBookings = persistedBookings.filter((booking) => booking.status === "cancelled");
 
   const handleRepeatBooking = (booking: ActivityBooking) => {
     setService(booking.serviceId);
@@ -90,11 +94,11 @@ export default function ActivityPage() {
               <p className="mt-1 text-xs text-muted">впереди</p>
             </div>
             <div>
-              <p className="text-xl font-black text-foreground">{pastVisits.length}</p>
+              <p className="text-xl font-black text-foreground">{pastBookings.length}</p>
               <p className="mt-1 text-xs text-muted">визита</p>
             </div>
             <div>
-              <p className="text-xl font-black text-foreground">0</p>
+              <p className="text-xl font-black text-foreground">{goBookings.length}</p>
               <p className="mt-1 text-xs text-muted">GO</p>
             </div>
           </div>
@@ -117,21 +121,25 @@ export default function ActivityPage() {
           <ActivitySection
             title="STRIGLO GO"
             subtitle="Активные выездные заявки."
-            empty
+            empty={goBookings.length === 0}
             emptyTitle="Нет активных GO заявок"
             emptyText="Когда появится выездная заявка, она будет здесь."
-            action={<Badge variant="accent">0</Badge>}
-          />
+            action={<Badge variant="accent">{goBookings.length}</Badge>}
+          >
+            {goBookings.map((booking) => (
+              <ActivityCard key={booking.id} booking={booking} />
+            ))}
+          </ActivitySection>
 
           <ActivitySection
             title="История"
-            subtitle="Прошлые визиты и быстрый повтор."
-            empty={pastVisits.length === 0}
+            subtitle="Завершённые или отменённые записи."
+            empty={pastBookings.length === 0}
             emptyTitle="История пока пустая"
-            emptyText="После первого визита здесь появится кнопка повтора."
-            action={<Badge>{pastVisits.length}</Badge>}
+            emptyText="После завершённых визитов здесь появится быстрый повтор."
+            action={<Badge>{pastBookings.length}</Badge>}
           >
-            {pastVisits.map((booking) => (
+            {pastBookings.map((booking) => (
               <ActivityCard key={booking.id} booking={booking} onRepeat={handleRepeatBooking} />
             ))}
           </ActivitySection>

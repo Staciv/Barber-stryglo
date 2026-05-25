@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { mockBarbers } from "@/entities/barber/mock";
+import { useAppointmentStore } from "@/entities/booking/appointment-store";
 import { mockServices } from "@/entities/service/mock";
 import { Avatar } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
@@ -34,7 +35,23 @@ const goWindows: GoWindow[] = [
   { id: "tomorrow-evening", label: "Завтра вечером", date: "завтра", time: "20:00" },
 ];
 
+function toDateValue(date: Date) {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
+}
+
+function dateFromToday(offsetDays: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  return toDateValue(date);
+}
+
+function getGoWindowDate(windowId: string) {
+  return windowId === "evening-today" ? dateFromToday(0) : dateFromToday(1);
+}
+
 export default function GoPage() {
+  const createAppointment = useAppointmentStore((state) => state.createAppointment);
   const [selectedWindowId, setSelectedWindowId] = useState(goWindows[0].id);
   const [useCustomTime, setUseCustomTime] = useState(false);
   const [customTime, setCustomTime] = useState("18:30");
@@ -85,12 +102,34 @@ export default function GoPage() {
 
     setErrors(nextErrors);
 
-    if (nextErrors.address || nextErrors.customerName || nextErrors.phone || nextErrors.customTime) {
+    if (
+      nextErrors.address ||
+      nextErrors.customerName ||
+      nextErrors.phone ||
+      nextErrors.customTime ||
+      !selectedService ||
+      !selectedBarber
+    ) {
       return;
     }
 
     setIsSubmitting(true);
     window.setTimeout(() => {
+      createAppointment({
+        serviceId: selectedService.id,
+        serviceName: selectedService.name,
+        barberId: selectedBarber.id,
+        barberName: selectedBarber.name,
+        date: useCustomTime ? dateFromToday(1) : getGoWindowDate(selectedWindow.id),
+        startTime: useCustomTime ? customTime : selectedWindow.time,
+        clientName: customerName.trim(),
+        clientPhone: phone.trim(),
+        comment: address.trim(),
+        priceByn: selectedService.priceByn,
+        durationMinutes: selectedService.durationMinutes,
+        status: "pending",
+        type: "go",
+      });
       setIsSubmitting(false);
       setIsSubmitted(true);
     }, 220);

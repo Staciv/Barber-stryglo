@@ -380,8 +380,13 @@ export default function BookingPage() {
                 onClick={showContact ? undefined : handleContinue}
                 type={showContact ? "submit" : "button"}
                 form={showContact ? "booking-contact-form" : undefined}
+                loading={showContact && isSubmitting}
               >
-                {showContact ? "Заполни форму" : "Продолжить"}
+                {showContact
+                  ? isSubmitting
+                    ? "Сохраняем"
+                    : "Подтвердить"
+                  : "Продолжить"}
               </Button>
             </div>
           </Card>

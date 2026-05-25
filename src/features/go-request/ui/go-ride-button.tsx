@@ -9,6 +9,7 @@ export function GoRideButton() {
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
   const [isDriving, setIsDriving] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -52,19 +53,32 @@ export function GoRideButton() {
       <span aria-hidden="true" className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
       <span aria-hidden="true" className="absolute inset-x-8 bottom-0 h-px bg-gradient-to-r from-transparent via-accent/45 to-transparent" />
 
-      <motion.img
-        src="/striglo-go-button.png"
-        alt=""
-        aria-hidden="true"
-        initial={false}
-        animate={isDriving ? { x: 390, y: "-50%", scale: 0.98 } : { x: 0, y: "-50%", scale: 1 }}
-        transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
-        style={{
-          WebkitMaskImage: "linear-gradient(to right, black 0%, black 72%, transparent 100%)",
-          maskImage: "linear-gradient(to right, black 0%, black 72%, transparent 100%)",
-        }}
-        className="absolute -left-14 top-1/2 h-[18rem] w-[18rem] object-contain object-left-center opacity-95"
-      />
+      {imageFailed ? (
+        <motion.span
+          aria-hidden="true"
+          initial={false}
+          animate={isDriving ? { x: 390, y: "-50%", scale: 0.98 } : { x: 0, y: "-50%", scale: 1 }}
+          transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute left-4 top-1/2 flex h-[5.75rem] w-[9.75rem] items-center justify-center rounded-[2rem] border border-accent/25 bg-black/40 text-xl font-black text-accent shadow-glow"
+        >
+          GO
+        </motion.span>
+      ) : (
+        <motion.img
+          src="/striglo-go-button.png"
+          alt=""
+          aria-hidden="true"
+          onError={() => setImageFailed(true)}
+          initial={false}
+          animate={isDriving ? { x: 390, y: "-50%", scale: 0.98 } : { x: 0, y: "-50%", scale: 1 }}
+          transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            WebkitMaskImage: "linear-gradient(to right, black 0%, black 72%, transparent 100%)",
+            maskImage: "linear-gradient(to right, black 0%, black 72%, transparent 100%)",
+          }}
+          className="absolute -left-14 top-1/2 h-[18rem] w-[18rem] object-contain object-left-center opacity-95"
+        />
+      )}
 
       <AnimatePresence initial={false}>
         {!isDriving && (

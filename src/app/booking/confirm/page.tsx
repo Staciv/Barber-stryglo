@@ -11,7 +11,9 @@ import { FadeIn, MotionCard } from "@/shared/ui/motion";
 export default function BookingConfirmPage() {
   const appointments = useAppointmentStore((state) => state.appointments);
   const lastAppointmentId = useAppointmentStore((state) => state.lastAppointmentId);
-  const appointment = appointments.find((item) => item.id === lastAppointmentId);
+  const appointment =
+    appointments.find((item) => item.id === lastAppointmentId) ??
+    appointments[0];
   const statusLabel = appointment?.status === "pending"
     ? "Ожидает подтверждения"
     : appointment?.status === "cancelled"

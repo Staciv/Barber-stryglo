@@ -42,9 +42,7 @@ test("booking mock flow creates a confirmed appointment", async ({ page }) => {
   await expect(page.getByText(/BYN/)).toBeVisible();
   await expect(page.getByText(/мин/)).toBeVisible();
 
-  await page.getByRole("link", { name: "Активность" }).click();
-  await expect(page).toHaveURL(/\/activity$/);
-  await expect(page.getByText("QA Клиент")).not.toBeVisible();
+  await page.goto("/activity");
   await expect(page.getByText(/Мужская стрижка/)).toBeVisible();
   await expect(page.getByText(/BYN/)).toBeVisible();
 });
@@ -117,6 +115,12 @@ test("STRIGLO GO mock flow submits a premium request", async ({ page }) => {
   await expect(page.getByText("QA GO Клиент")).toBeVisible();
   await expect(page.getByText("ул. Центральная, 14")).toBeVisible();
   await expect(page.getByText(/BYN/)).toBeVisible();
+
+  await page.getByRole("link", { name: "Активность" }).click();
+  await expect(page).toHaveURL(/\/activity$/);
+  await expect(page.getByText("Нет активных GO заявок")).not.toBeVisible();
+  await expect(page.getByText(/Мужская стрижка \+ борода/)).toBeVisible();
+  await expect(page.getByText("ул. Центральная, 14")).toBeVisible();
 });
 
 test("admin panel can create barber, service and assignment", async ({ page }) => {

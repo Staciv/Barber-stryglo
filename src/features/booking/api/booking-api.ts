@@ -1,5 +1,8 @@
 import type { PostgrestError } from "@supabase/supabase-js";
-import { getSupabaseBrowserClient } from "@/shared/lib/supabase/client";
+import {
+  getSupabaseBrowserClient,
+  isSupabaseConfigured,
+} from "@/shared/lib/supabase/client";
 import type {
   Barber,
   BarberAvailability,
@@ -37,8 +40,18 @@ function throwIfError(error: PostgrestError | null, fallbackMessage: string) {
   }
 }
 
+function getConfiguredSupabaseClient() {
+  if (!isSupabaseConfigured()) {
+    throw new BookingApiError(
+      "Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local, or keep using the mock booking flow.",
+    );
+  }
+
+  return getSupabaseBrowserClient();
+}
+
 export async function getBarbers(): Promise<Barber[]> {
-  const supabase = getSupabaseBrowserClient();
+  const supabase = getConfiguredSupabaseClient();
   const { data, error } = await supabase
     .from("barbers")
     .select("*")
@@ -50,7 +63,7 @@ export async function getBarbers(): Promise<Barber[]> {
 }
 
 export async function getServices(): Promise<Service[]> {
-  const supabase = getSupabaseBrowserClient();
+  const supabase = getConfiguredSupabaseClient();
   const { data, error } = await supabase
     .from("services")
     .select("*")
@@ -64,7 +77,7 @@ export async function getServices(): Promise<Service[]> {
 export async function getAvailability(
   filters: GetAvailabilityFilters = {},
 ): Promise<BarberAvailability[]> {
-  const supabase = getSupabaseBrowserClient();
+  const supabase = getConfiguredSupabaseClient();
   let query = supabase
     .from("barber_availability")
     .select("*")
@@ -82,7 +95,7 @@ export async function getAvailability(
 }
 
 export async function getBookings(filters: GetBookingsFilters = {}): Promise<Booking[]> {
-  const supabase = getSupabaseBrowserClient();
+  const supabase = getConfiguredSupabaseClient();
   let query = supabase
     .from("bookings")
     .select("*")
@@ -116,7 +129,7 @@ export async function getBookings(filters: GetBookingsFilters = {}): Promise<Boo
 }
 
 export async function createBooking(input: CreateBookingInput): Promise<Booking> {
-  const supabase = getSupabaseBrowserClient();
+  const supabase = getConfiguredSupabaseClient();
   const { data, error } = await supabase
     .from("bookings")
     .insert(input)
@@ -133,7 +146,7 @@ export async function createBooking(input: CreateBookingInput): Promise<Booking>
 }
 
 export async function cancelBooking(bookingId: string): Promise<Booking> {
-  const supabase = getSupabaseBrowserClient();
+  const supabase = getConfiguredSupabaseClient();
   const { data, error } = await supabase
     .from("bookings")
     .update({ status: "cancelled" })
