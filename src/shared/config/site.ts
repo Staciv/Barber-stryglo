@@ -1,4 +1,4 @@
 export const siteConfig = {
   name: "STRIGLO",
-  description: "Mobile-first booking foundation for a premium barber-tech product.",
+  description: "Запись к барберу за минуту. Выбери услугу, мастера и удобное время — без звонков и долгих переписок.",
 } as const;
