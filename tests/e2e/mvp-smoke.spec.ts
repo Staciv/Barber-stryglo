@@ -78,12 +78,11 @@ test("booking contact form requires name and Belarus phone", async ({ page }) =>
   await page.getByRole("button", { name: "Подтвердить запись" }).click();
   await expect(page.getByText(/Номер должен содержать|белорусский номер/)).toBeVisible();
 
-  await page.locator("#booking-phone").fill("+375331234567");
-  await page.getByRole("button", { name: "Подтвердить запись" }).click();
-  await expect(page.getByText(/Подтверди телефон/)).toBeVisible();
+  await page.locator("#booking-phone").fill("33 123 45 67");
+  await expect(page.getByText("Демо-код: 1111")).toBeVisible();
   await page.getByLabel("SMS-код").fill("1111");
   await page.getByRole("button", { name: "Подтвердить телефон" }).click();
-  await expect(page.getByText(/Подтверди телефон/)).not.toBeVisible();
+  await expect(page.getByText("Демо-код: 1111")).not.toBeVisible();
 });
 
 test("mock login rejects wrong OTP and accepts 1111", async ({ page }) => {

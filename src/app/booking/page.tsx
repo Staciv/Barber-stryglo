@@ -217,7 +217,7 @@ export default function BookingPage() {
     if (phoneOtp !== "1111") {
       setErrors((current) => ({
         ...current,
-        phoneOtp: "Неверный код. Для MVP используй 1111",
+        phoneOtp: "Неверный код. В демо-версии код подтверждения: 1111",
       }));
       return;
     }
@@ -409,6 +409,7 @@ export default function BookingPage() {
                     <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
                       <label className="block space-y-2" htmlFor="booking-phone-otp">
                         <span className="text-sm font-medium text-foreground">SMS-код</span>
+                        <span className="block text-xs text-muted">Демо-код: 1111</span>
                         <input
                           id="booking-phone-otp"
                           inputMode="numeric"
