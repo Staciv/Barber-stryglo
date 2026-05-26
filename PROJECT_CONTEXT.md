@@ -115,11 +115,11 @@ In user-facing UI, prefer local display format like:
 100 р.
 ```
 
-Do not use `BYN`, `PLN` or `zł` as the default visible price format in the main booking UI.
+Do not use currency codes or foreign currency symbols as the default visible price format in the main booking UI.
 
 Important distinction:
 
-- `BYN` is the official currency code and may exist internally if needed.
+- The official currency code may exist internally if needed.
 - In the user-facing booking UI, the preferred visible format is `50 р.`.
 
 ## Phone localization

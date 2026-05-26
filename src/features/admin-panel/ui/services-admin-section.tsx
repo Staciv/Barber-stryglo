@@ -60,7 +60,7 @@ export function ServicesAdminSection() {
   return (
     <AdminSection
       title="Услуги"
-      subtitle="Управляй MVP-услугами, длительностью и ценами в BYN."
+      subtitle="Управляй услугами, длительностью и ценами в рублях."
       action={<Badge variant="accent">{services.length}</Badge>}
     >
       <Card>
@@ -96,7 +96,7 @@ export function ServicesAdminSection() {
                 }}
               />
             </Field>
-            <Field label="BYN" error={errors.priceByn}>
+            <Field label="р." error={errors.priceByn}>
               <TextInput
                 type="number"
                 min={0}
@@ -135,7 +135,7 @@ export function ServicesAdminSection() {
                   <p className="font-semibold text-foreground">{service.title}</p>
                   <p className="mt-1 text-sm leading-5 text-muted">{service.description || "Без описания"}</p>
                   <p className="mt-3 text-sm text-muted">
-                    {service.durationMinutes} мин · {service.priceByn} BYN
+                    {service.durationMinutes} мин · {service.priceByn} р.
                   </p>
                 </div>
                 <Badge variant={service.isActive ? "success" : "default"}>

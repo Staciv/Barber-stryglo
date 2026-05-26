@@ -257,7 +257,7 @@ export default function BookingPage() {
           <div className="mb-5 space-y-3">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-semibold text-foreground">Услуга</p>
-              <span className="text-xs text-muted">цены в BYN</span>
+              <span className="text-xs text-muted">цены в рублях</span>
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {mockServices.map((service) => {
@@ -278,7 +278,7 @@ export default function BookingPage() {
                   >
                     <span className="block text-sm font-semibold">{service.name}</span>
                     <span className={cn("mt-1 block text-xs", selected ? "text-white/85" : "text-muted")}>
-                      {service.priceByn} BYN · {service.durationMinutes} мин
+                      {service.priceByn} р. · {service.durationMinutes} мин
                     </span>
                   </button>
                 );

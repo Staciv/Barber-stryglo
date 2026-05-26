@@ -93,7 +93,7 @@ export default function VoicePage() {
                 <p><span className="text-muted">Дата:</span> Завтра</p>
                 <p><span className="text-muted">Время:</span> 18:30</p>
                 <p><span className="text-muted">Мастер:</span> Амир</p>
-                <p><span className="text-muted">Цена:</span> {service.priceByn} BYN</p>
+                <p><span className="text-muted">Цена:</span> {service.priceByn} р.</p>
               </div>
             </Card>
 

@@ -43,12 +43,12 @@ test("booking mock flow creates a confirmed appointment", async ({ page }) => {
   await expect(page.getByText("Запись подтверждена")).toBeVisible();
   await expect(page.getByText("QA Клиент")).toBeVisible();
   await expect(page.getByText("+375291234567")).toBeVisible();
-  await expect(page.getByText(/BYN/)).toBeVisible();
+  await expect(page.getByText(/\d+\sр\./)).toBeVisible();
   await expect(page.getByText(/мин/)).toBeVisible();
 
   await page.goto("/activity");
   await expect(page.getByText(/Мужская стрижка/)).toBeVisible();
-  await expect(page.getByText(/BYN/)).toBeVisible();
+  await expect(page.getByText(/\d+\sр\./)).toBeVisible();
 });
 
 test("activity shows empty state when there are no appointments", async ({ page }) => {
@@ -136,7 +136,7 @@ test("STRIGLO GO mock flow submits a premium request", async ({ page }) => {
   await expect(page.getByText("GO-заявка отправлена")).toBeVisible();
   await expect(page.getByText("QA GO Клиент")).toBeVisible();
   await expect(page.getByText("ул. Центральная, 14")).toBeVisible();
-  await expect(page.getByText(/BYN/)).toBeVisible();
+  await expect(page.getByText(/\d+\sр\./)).toBeVisible();
 
   await page.getByRole("link", { name: "Активность" }).click();
   await expect(page).toHaveURL(/\/activity$/);
@@ -157,7 +157,7 @@ test("admin panel can create barber, service and assignment", async ({ page }) =
   await page.locator("input[placeholder='Например, Детская стрижка']").fill("QA Услуга");
   await page.locator("textarea[placeholder='Коротко, что входит в услугу']").fill("Тестовая услуга");
   await page.getByLabel("Минуты").fill("25");
-  await page.getByLabel("BYN").fill("35");
+  await page.getByLabel("р.").fill("35");
   await page.getByRole("button", { name: "Создать услугу" }).click();
   await expect(page.getByText("QA Услуга")).toBeVisible();
 
@@ -180,7 +180,7 @@ test("voice mock flow creates an appointment", async ({ page }) => {
 
   await expect(page).toHaveURL(/\/booking\/confirm$/);
   await expect(page.getByText("Voice mock клиент")).toBeVisible();
-  await expect(page.getByText(/BYN/)).toBeVisible();
+  await expect(page.getByText(/\d+\sр\./)).toBeVisible();
 
   await page.goto("/activity");
   await expect(page.getByText(/Мужская стрижка/)).toBeVisible();
@@ -195,7 +195,7 @@ test("recommendation mock flow shows result and routes to booking", async ({ pag
   await page.getByRole("button", { name: "Да" }).click();
 
   await expect(page.getByText("Тебе подойдёт: Crop Fade")).toBeVisible();
-  await expect(page.getByText(/BYN/)).toBeVisible();
+  await expect(page.getByText(/\d+\sр\./)).toBeVisible();
 
   await page.getByRole("button", { name: "Записаться с этой рекомендацией" }).click();
   await expect(page).toHaveURL(/\/booking$/);

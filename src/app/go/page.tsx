@@ -205,7 +205,7 @@ export default function GoPage() {
             <p className="mt-1 text-sm text-muted">{selectedBarber?.name ?? "Мастер STRIGLO"}</p>
             {selectedService && (
               <p className="mt-1 text-sm text-muted">
-                {selectedService.priceByn} BYN · {selectedService.durationMinutes} мин
+                {selectedService.priceByn} р. · {selectedService.durationMinutes} мин
               </p>
             )}
             <p className="mt-3 text-sm text-muted">
@@ -366,7 +366,7 @@ export default function GoPage() {
                   >
                     <span className="block text-sm font-semibold">{service.name}</span>
                     <span className={cn("mt-1 block text-xs", selected ? "text-white/85" : "text-muted")}>
-                      {service.priceByn} BYN · {service.durationMinutes} мин
+                      {service.priceByn} р. · {service.durationMinutes} мин
                     </span>
                   </button>
                 );

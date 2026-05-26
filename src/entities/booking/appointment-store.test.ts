@@ -7,7 +7,7 @@ describe("appointment store", () => {
     useAppointmentStore.getState().clearAppointments();
   });
 
-  it("creates a confirmed appointment with BYN price and client details", () => {
+  it("creates a confirmed appointment with local price and client details", () => {
     const appointment = useAppointmentStore.getState().createAppointment({
       serviceId: "cut",
       serviceName: "Мужская стрижка",

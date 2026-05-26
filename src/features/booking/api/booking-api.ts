@@ -6,6 +6,7 @@ import {
 import type {
   Barber,
   BarberAvailability,
+  BarberService,
   Booking,
   BookingStatus,
   CreateBookingInput,
@@ -71,6 +72,16 @@ export async function getServices(): Promise<Service[]> {
     .order("title", { ascending: true });
 
   throwIfError(error, "Failed to load services.");
+  return data ?? [];
+}
+
+export async function getBarberServices(): Promise<BarberService[]> {
+  const supabase = getConfiguredSupabaseClient();
+  const { data, error } = await supabase
+    .from("barber_services")
+    .select("id, barber_id, service_id");
+
+  throwIfError(error, "Failed to load barber service assignments.");
   return data ?? [];
 }
 

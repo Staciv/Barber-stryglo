@@ -59,7 +59,7 @@ export function ActivityCard({ booking, onRepeat }: ActivityCardProps) {
             {booking.endTime ? `-${booking.endTime}` : ""}
           </p>
           <p className="mt-1 text-sm text-muted">
-            {booking.durationMinutes} мин · {booking.priceByn} BYN
+            {booking.durationMinutes} мин · {booking.priceByn} р.
           </p>
           {booking.address && <p className="mt-1 text-sm text-muted">{booking.address}</p>}
         </div>

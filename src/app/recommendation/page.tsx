@@ -110,7 +110,7 @@ export default function RecommendationPage() {
               <p className="text-sm text-muted">Рекомендуемая услуга</p>
               <p className="mt-2 text-lg font-semibold text-foreground">{recommendedService.name}</p>
               <p className="mt-1 text-sm text-muted">
-                {recommendedService.priceByn} BYN · {recommendedService.durationMinutes} мин
+                {recommendedService.priceByn} р. · {recommendedService.durationMinutes} мин
               </p>
             </Card>
             <Button type="button" className="mt-4 w-full" size="lg" onClick={handleBooking}>

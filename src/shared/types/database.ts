@@ -36,6 +36,12 @@ export type Service = {
   is_active: boolean;
 };
 
+export type BarberService = {
+  id: string;
+  barber_id: string;
+  service_id: string;
+};
+
 export type BarberAvailability = {
   id: string;
   barber_id: string;
@@ -141,11 +147,7 @@ export type Database = {
         Relationships: [];
       };
       barber_services: {
-        Row: {
-          id: string;
-          barber_id: string;
-          service_id: string;
-        };
+        Row: BarberService;
         Insert: {
           id?: string;
           barber_id: string;

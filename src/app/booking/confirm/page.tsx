@@ -56,7 +56,7 @@ export default function BookingConfirmPage() {
                   {appointment.endTime ? `-${appointment.endTime}` : ""}
                 </p>
                 <p><span className="text-muted">Длительность:</span> {appointment.durationMinutes} мин</p>
-                <p><span className="text-muted">Цена:</span> {appointment.priceByn} BYN</p>
+                <p><span className="text-muted">Цена:</span> {appointment.priceByn} р.</p>
                 <p><span className="text-muted">Клиент:</span> {appointment.clientName}</p>
                 <p><span className="text-muted">Телефон:</span> {appointment.clientPhone}</p>
                 {appointment.comment && (
