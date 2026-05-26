@@ -135,7 +135,7 @@ function ActionRow() {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.08, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      className="mt-4 grid grid-cols-[0.74fr_1.26fr] gap-3"
+      className="mt-4 grid grid-cols-2 gap-3"
       aria-label="Основные действия"
     >
       <PrimaryButton />
