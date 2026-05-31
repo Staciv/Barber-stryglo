@@ -6,11 +6,12 @@ import { useAppointmentStore } from "@/entities/booking/appointment-store";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { EmptyState } from "@/shared/ui/empty-state";
+import { useHydratedStore } from "@/shared/lib/use-hydrated-store";
 import { FadeIn, MotionCard } from "@/shared/ui/motion";
 
 export default function BookingConfirmPage() {
-  const appointments = useAppointmentStore((state) => state.appointments);
-  const lastAppointmentId = useAppointmentStore((state) => state.lastAppointmentId);
+  const appointments = useHydratedStore(useAppointmentStore, (state) => state.appointments) ?? [];
+  const lastAppointmentId = useHydratedStore(useAppointmentStore, (state) => state.lastAppointmentId);
   const appointment =
     appointments.find((item) => item.id === lastAppointmentId) ??
     appointments[0];

@@ -9,16 +9,19 @@ import type { ActivityBooking } from "@/features/activity/model/mock-activity";
 import { ActivityCard } from "@/features/activity/ui/activity-card";
 import { ActivitySection } from "@/features/activity/ui/activity-section";
 import { useBookingDraftStore } from "@/features/booking/model/booking-draft-store";
+import { useHydratedStore } from "@/shared/lib/use-hydrated-store";
 import { Badge } from "@/shared/ui/badge";
 import { Card } from "@/shared/ui/card";
 
 export default function ActivityPage() {
   const router = useRouter();
   const setService = useBookingDraftStore((state) => state.setService);
-  const appointments = useAppointmentStore((state) => state.appointments);
+  const hydratedAppointments = useHydratedStore(useAppointmentStore, (state) => state.appointments);
   const persistedBookings: ActivityBooking[] = useMemo(
-    () =>
-      appointments.map((appointment) => ({
+    () => {
+      const appointments = hydratedAppointments ?? [];
+
+      return appointments.map((appointment) => ({
         id: appointment.id,
         barberName: appointment.barberName,
         barberId: appointment.barberId,
@@ -32,8 +35,9 @@ export default function ActivityPage() {
         priceByn: appointment.priceByn,
         durationMinutes: appointment.durationMinutes,
         address: appointment.type === "go" ? appointment.comment : undefined,
-      })),
-    [appointments],
+      }));
+    },
+    [hydratedAppointments],
   );
   const displayedUpcomingBookings = persistedBookings.filter(
     (booking) => booking.type === "salon" && booking.status !== "cancelled",

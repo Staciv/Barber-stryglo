@@ -22,6 +22,7 @@ import { Card } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { InlineError } from "@/shared/ui/inline-error";
 import { isValidBelarusPhone } from "@/shared/lib/belarus-phone";
+import { useHydratedStore } from "@/shared/lib/use-hydrated-store";
 import { PhoneInput } from "@/shared/ui/phone-input";
 import { cn } from "@/shared/lib/utils";
 
@@ -76,8 +77,9 @@ export default function BookingPage() {
   const clearSlot = useBookingDraftStore((state) => state.clearSlot);
   const resetDraft = useBookingDraftStore((state) => state.resetDraft);
   const createAppointment = useAppointmentStore((state) => state.createAppointment);
-  const authPhone = useAuthStore((state) => state.user?.phone);
+  const authPhone = useHydratedStore(useAuthStore, (state) => state.user?.phone);
   const contactRef = useRef<HTMLDivElement>(null);
+  const isMountedRef = useRef(false);
   const [showContact, setShowContact] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [comment, setComment] = useState("");
@@ -113,6 +115,14 @@ export default function BookingPage() {
     : !selectedBarber
       ? "Выбери доступного мастера"
       : "";
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (authPhone && !contactPhone) {
@@ -199,7 +209,9 @@ export default function BookingPage() {
         type: "salon",
       });
       resetDraft();
-      router.push("/booking/confirm");
+      if (isMountedRef.current) {
+        router.push("/booking/confirm");
+      }
     }, 350);
   };
 

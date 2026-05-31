@@ -8,11 +8,12 @@ import { BarbersAdminSection } from "@/features/admin-panel/ui/barbers-admin-sec
 import { SchedulesAdminSection } from "@/features/admin-panel/ui/schedules-admin-section";
 import { ServicesAdminSection } from "@/features/admin-panel/ui/services-admin-section";
 import { AdminTabs, type AdminTab } from "@/features/admin-panel/ui/admin-tabs";
+import { RequireAuth } from "@/features/auth/ui/require-auth";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 
-export default function AdminPage() {
+function AdminPanelContent() {
   const [activeTab, setActiveTab] = useState<AdminTab>("barbers");
 
   return (
@@ -68,4 +69,16 @@ export default function AdminPage() {
       </div>
     </main>
   );
+}
+
+export default function AdminPage() {
+  if (process.env.NEXT_PUBLIC_DEV_ADMIN_OPEN !== "true") {
+    return (
+      <RequireAuth warningMessage="⚠️ Admin is unprotected — dev mode">
+        <AdminPanelContent />
+      </RequireAuth>
+    );
+  }
+
+  return <AdminPanelContent />;
 }

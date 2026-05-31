@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/features/auth/model/auth-store";
+import { useHydratedStore } from "@/shared/lib/use-hydrated-store";
 import { GoRideButton } from "@/features/go-request/ui/go-ride-button";
 import { cn } from "@/shared/lib/utils";
 
@@ -29,8 +30,8 @@ type TrustItemProps = {
 };
 
 function Header() {
-  const user = useAuthStore((state) => state.user);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useHydratedStore(useAuthStore, (state) => state.user);
+  const isAuthenticated = useHydratedStore(useAuthStore, (state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
 
   return (

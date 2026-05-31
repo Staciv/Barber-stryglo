@@ -2,28 +2,38 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAuthStore, type MockUserRole } from "@/features/auth/model/auth-store";
+import type { MockUserRole } from "@/features/auth/model/auth-store";
 
 type RequireAuthProps = {
   children: React.ReactNode;
   allowedRoles?: MockUserRole[];
+  warningMessage?: string | null;
 };
 
-export function RequireAuth({ children, allowedRoles }: RequireAuthProps) {
+export function RequireAuth({ children, warningMessage = null }: RequireAuthProps) {
   const router = useRouter();
-  const user = useAuthStore((state) => state.user);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const isAllowed = !allowedRoles || (user ? allowedRoles.includes(user.role) : false);
+  const isDevelopment = process.env.NODE_ENV === "development";
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/login");
+    if (!isDevelopment) {
+      router.replace("/");
     }
-  }, [isAuthenticated, router]);
+  }, [isDevelopment, router]);
 
-  if (!isAuthenticated || !isAllowed) {
+  if (!isDevelopment) {
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {warningMessage && (
+        <div className="mx-auto w-full max-w-5xl px-4 pt-safe-offset-4">
+          <div className="rounded-2xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm font-semibold text-warning">
+            {warningMessage}
+          </div>
+        </div>
+      )}
+      {children}
+    </>
+  );
 }

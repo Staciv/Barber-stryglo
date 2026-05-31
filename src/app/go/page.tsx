@@ -7,6 +7,7 @@ import { mockBarbers } from "@/entities/barber/mock";
 import { useAppointmentStore } from "@/entities/booking/appointment-store";
 import { mockServices } from "@/entities/service/mock";
 import { useAuthStore } from "@/features/auth/model/auth-store";
+import { RequireAuth } from "@/features/auth/ui/require-auth";
 import { Avatar } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -14,6 +15,8 @@ import { Card } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { InlineError } from "@/shared/ui/inline-error";
 import { isValidBelarusPhone } from "@/shared/lib/belarus-phone";
+import { dateFromToday } from "@/shared/lib/date-utils";
+import { useHydratedStore } from "@/shared/lib/use-hydrated-store";
 import { PhoneInput } from "@/shared/ui/phone-input";
 import { cn } from "@/shared/lib/utils";
 
@@ -37,17 +40,6 @@ const goWindows: GoWindow[] = [
   { id: "tomorrow-day", label: "Завтра днём", date: "завтра", time: "14:00" },
   { id: "tomorrow-evening", label: "Завтра вечером", date: "завтра", time: "20:00" },
 ];
-
-function toDateValue(date: Date) {
-  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 10);
-}
-
-function dateFromToday(offsetDays: number) {
-  const date = new Date();
-  date.setDate(date.getDate() + offsetDays);
-  return toDateValue(date);
-}
 
 function formatGoDate(value: string) {
   const [year, month, day] = value.split("-").map(Number);
@@ -74,8 +66,8 @@ function getGoWindowDate(windowId: string) {
   return windowId === "evening-today" ? dateFromToday(0) : dateFromToday(1);
 }
 
-export default function GoPage() {
-  const userPhone = useAuthStore((state) => state.user?.phone);
+function GoPageContent() {
+  const userPhone = useHydratedStore(useAuthStore, (state) => state.user?.phone);
   const createAppointment = useAppointmentStore((state) => state.createAppointment);
   const [selectedWindowId, setSelectedWindowId] = useState(goWindows[0].id);
   const [useCustomTime, setUseCustomTime] = useState(false);
@@ -114,6 +106,7 @@ export default function GoPage() {
   const selectedGoTime = useCustomTime ? customTime : selectedWindow.time;
   const selectedGoDateLabel = selectedGoDate ? getRelativeDateLabel(selectedGoDate) : "";
   const goSummary = `${selectedGoDateLabel} · ${selectedGoTime || "время не выбрано"}`;
+  const isContactPhoneVerified = Boolean(userPhone && phone === userPhone);
 
   useEffect(() => {
     if (userPhone && !phone) {
@@ -161,6 +154,7 @@ export default function GoPage() {
       return;
     }
 
+    // TODO: enforce OTP in production
     setIsSubmitting(true);
     window.setTimeout(() => {
       createAppointment({
@@ -464,6 +458,11 @@ export default function GoPage() {
                 error={errors.phone}
                 description="На этот номер мастер свяжется для подтверждения."
               />
+              {phone && !isContactPhoneVerified && (
+                <p className="rounded-2xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm font-semibold text-warning">
+                  Phone not verified
+                </p>
+              )}
             </div>
           </Card>
 
@@ -493,5 +492,13 @@ export default function GoPage() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function GoPage() {
+  return (
+    <RequireAuth>
+      <GoPageContent />
+    </RequireAuth>
   );
 }

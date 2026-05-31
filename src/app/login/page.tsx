@@ -10,14 +10,15 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { InlineError } from "@/shared/ui/inline-error";
 import { PhoneInput } from "@/shared/ui/phone-input";
+import { useHydratedStore } from "@/shared/lib/use-hydrated-store";
 import { cn } from "@/shared/lib/utils";
 
 type LoginStep = "phone" | "otp";
 
 export default function LoginPage() {
   const router = useRouter();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const pendingPhone = useAuthStore((state) => state.pendingPhone);
+  const isAuthenticated = useHydratedStore(useAuthStore, (state) => state.isAuthenticated);
+  const pendingPhone = useHydratedStore(useAuthStore, (state) => state.pendingPhone);
   const loginWithPhone = useAuthStore((state) => state.loginWithPhone);
   const verifyOtp = useAuthStore((state) => state.verifyOtp);
 
