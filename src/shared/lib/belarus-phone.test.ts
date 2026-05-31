@@ -36,12 +36,17 @@ describe("Belarus phone validation", () => {
   });
 
   it("extracts the national part from supported Belarus formats", () => {
+    expect(extractBelarusNationalPart("291234567")).toBe("291234567");
+    expect(extractBelarusNationalPart("29 123 45 67")).toBe("291234567");
+    expect(extractBelarusNationalPart("+375291234567")).toBe("291234567");
     expect(extractBelarusNationalPart("+375 44 123 45 67")).toBe("441234567");
     expect(extractBelarusNationalPart("80291234567")).toBe("291234567");
   });
 
   it("normalizes to +375XXXXXXXXX", () => {
     expect(normalizeBelarusNationalPart("29 123 45 67")).toBe("+375291234567");
+    expect(normalizeBelarusNationalPart("+375291234567")).toBe("+375291234567");
+    expect(normalizeBelarusNationalPart("80291234567")).toBe("+375291234567");
   });
 
   it("returns an operator-code validation error", () => {
@@ -49,5 +54,15 @@ describe("Belarus phone validation", () => {
       isValid: false,
       error: "Код оператора должен быть 25, 29, 33 или 44",
     });
+  });
+
+  it("accepts supported Belarus phone formats", () => {
+    expect(isValidBelarusPhone("+375291234567")).toBe(true);
+    expect(isValidBelarusPhone("80291234567")).toBe(true);
+  });
+
+  it("rejects wrong operator code and short numbers", () => {
+    expect(isValidBelarusPhone("+375991234567")).toBe(false);
+    expect(isValidBelarusPhone("+37529123")).toBe(false);
   });
 });

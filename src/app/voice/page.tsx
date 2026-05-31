@@ -5,16 +5,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAppointmentStore } from "@/entities/booking/appointment-store";
 import { mockServices } from "@/entities/service/mock";
+import { dateFromToday } from "@/shared/lib/date-utils";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-
-function dateFromToday(offsetDays: number) {
-  const date = new Date();
-  date.setDate(date.getDate() + offsetDays);
-  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 10);
-}
 
 export default function VoicePage() {
   const router = useRouter();
@@ -93,7 +87,7 @@ export default function VoicePage() {
                 <p><span className="text-muted">Дата:</span> Завтра</p>
                 <p><span className="text-muted">Время:</span> 18:30</p>
                 <p><span className="text-muted">Мастер:</span> Амир</p>
-                <p><span className="text-muted">Цена:</span> {service.priceByn} BYN</p>
+                <p><span className="text-muted">Цена:</span> {service.priceByn} р.</p>
               </div>
             </Card>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import {
   extractBelarusNationalPart,
   formatBelarusNationalPart,
@@ -21,6 +21,22 @@ type PhoneInputProps = {
   autoComplete?: string;
 };
 
+function getNextNationalPart(rawValue: string, currentDisplayValue: string) {
+  const rawDigits = rawValue.replace(/\D/g, "");
+  const currentDigits = extractBelarusNationalPart(currentDisplayValue);
+
+  if (currentDigits && rawDigits.length > 9 && rawDigits.startsWith(currentDigits)) {
+    const appendedDigits = rawDigits.slice(currentDigits.length);
+    const appendedNationalPart = extractBelarusNationalPart(appendedDigits);
+
+    if (appendedNationalPart) {
+      return appendedNationalPart;
+    }
+  }
+
+  return extractBelarusNationalPart(rawValue);
+}
+
 export function PhoneInput({
   id,
   label = "Телефон",
@@ -34,12 +50,22 @@ export function PhoneInput({
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const [touched, setTouched] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [displayValue, setDisplayValue] = useState(() =>
+    formatBelarusNationalPart(extractBelarusNationalPart(value)),
+  );
   const nationalPart = extractBelarusNationalPart(value);
   const validation = useMemo(
     () => validateBelarusNationalPart(nationalPart),
     [nationalPart],
   );
   const visibleError = error ?? (touched && nationalPart ? validation.error : undefined);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setDisplayValue(formatBelarusNationalPart(nationalPart));
+    }
+  }, [isFocused, nationalPart]);
 
   return (
     <label className="block space-y-2" htmlFor={inputId}>
@@ -60,11 +86,20 @@ export function PhoneInput({
           inputMode="numeric"
           autoComplete={autoComplete}
           disabled={disabled}
-          value={formatBelarusNationalPart(nationalPart)}
-          onBlur={() => setTouched(true)}
+          value={displayValue}
+          onBlur={() => {
+            setTouched(true);
+            setIsFocused(false);
+            setDisplayValue(formatBelarusNationalPart(displayValue));
+          }}
+          onFocus={() => {
+            setIsFocused(true);
+            setDisplayValue(extractBelarusNationalPart(displayValue));
+          }}
           onChange={(event) => {
-            const nextNationalPart = extractBelarusNationalPart(event.target.value);
-            onChange(normalizeBelarusNationalPart(nextNationalPart));
+            const nextNationalPart = getNextNationalPart(event.target.value, displayValue);
+            setDisplayValue(nextNationalPart);
+            onChange(nextNationalPart ? normalizeBelarusNationalPart(nextNationalPart) : "");
           }}
           placeholder="29 123 45 67"
           className="min-h-14 min-w-0 flex-1 bg-transparent px-4 text-foreground outline-none placeholder:text-white/35 disabled:cursor-not-allowed"

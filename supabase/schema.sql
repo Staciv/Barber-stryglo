@@ -6,7 +6,7 @@
 --   Later, when Supabase Auth is connected, this can be changed to reference auth.users(id)
 --   or mapped through a profile table migration.
 -- - Weekday uses 0-6, where 0 = Sunday and 6 = Saturday.
--- - Service prices are stored as integer minor units: BYN kopecks.
+-- - Service prices are stored as integer minor units: Belarusian kopecks.
 -- - RLS policies are intentionally not created in this task.
 
 create extension if not exists "pgcrypto";

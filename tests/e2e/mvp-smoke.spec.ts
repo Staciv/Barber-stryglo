@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 test("home page loads with booking CTA and STRIGLO branding", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: /Запись к барберу/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Запишись к барберу/ })).toBeVisible();
   await expect(page.getByText("STRIGLO").first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Записаться" })).toHaveAttribute("href", "/booking");
 });
@@ -43,12 +43,12 @@ test("booking mock flow creates a confirmed appointment", async ({ page }) => {
   await expect(page.getByText("Запись подтверждена")).toBeVisible();
   await expect(page.getByText("QA Клиент")).toBeVisible();
   await expect(page.getByText("+375291234567")).toBeVisible();
-  await expect(page.getByText(/BYN/)).toBeVisible();
+  await expect(page.getByText(/\d+\sр\./)).toBeVisible();
   await expect(page.getByText(/мин/)).toBeVisible();
 
   await page.goto("/activity");
   await expect(page.getByText(/Мужская стрижка/)).toBeVisible();
-  await expect(page.getByText(/BYN/)).toBeVisible();
+  await expect(page.getByText(/\d+\sр\./)).toBeVisible();
 });
 
 test("activity shows empty state when there are no appointments", async ({ page }) => {
@@ -78,12 +78,11 @@ test("booking contact form requires name and Belarus phone", async ({ page }) =>
   await page.getByRole("button", { name: "Подтвердить запись" }).click();
   await expect(page.getByText(/Номер должен содержать|белорусский номер/)).toBeVisible();
 
-  await page.locator("#booking-phone").fill("+375331234567");
-  await page.getByRole("button", { name: "Подтвердить запись" }).click();
-  await expect(page.getByText(/Подтверди телефон/)).toBeVisible();
+  await page.locator("#booking-phone").fill("33 123 45 67");
+  await expect(page.getByText("Демо-код: 1111")).toBeVisible();
   await page.getByLabel("SMS-код").fill("1111");
   await page.getByRole("button", { name: "Подтвердить телефон" }).click();
-  await expect(page.getByText(/Подтверди телефон/)).not.toBeVisible();
+  await expect(page.getByText("Демо-код: 1111")).not.toBeVisible();
 });
 
 test("mock login rejects wrong OTP and accepts 1111", async ({ page }) => {
@@ -136,7 +135,7 @@ test("STRIGLO GO mock flow submits a premium request", async ({ page }) => {
   await expect(page.getByText("GO-заявка отправлена")).toBeVisible();
   await expect(page.getByText("QA GO Клиент")).toBeVisible();
   await expect(page.getByText("ул. Центральная, 14")).toBeVisible();
-  await expect(page.getByText(/BYN/)).toBeVisible();
+  await expect(page.getByText(/\d+\sр\./)).toBeVisible();
 
   await page.getByRole("link", { name: "Активность" }).click();
   await expect(page).toHaveURL(/\/activity$/);
@@ -157,7 +156,7 @@ test("admin panel can create barber, service and assignment", async ({ page }) =
   await page.locator("input[placeholder='Например, Детская стрижка']").fill("QA Услуга");
   await page.locator("textarea[placeholder='Коротко, что входит в услугу']").fill("Тестовая услуга");
   await page.getByLabel("Минуты").fill("25");
-  await page.getByLabel("BYN").fill("35");
+  await page.getByLabel("р.").fill("35");
   await page.getByRole("button", { name: "Создать услугу" }).click();
   await expect(page.getByText("QA Услуга")).toBeVisible();
 
@@ -180,7 +179,7 @@ test("voice mock flow creates an appointment", async ({ page }) => {
 
   await expect(page).toHaveURL(/\/booking\/confirm$/);
   await expect(page.getByText("Voice mock клиент")).toBeVisible();
-  await expect(page.getByText(/BYN/)).toBeVisible();
+  await expect(page.getByText(/\d+\sр\./)).toBeVisible();
 
   await page.goto("/activity");
   await expect(page.getByText(/Мужская стрижка/)).toBeVisible();
@@ -195,7 +194,7 @@ test("recommendation mock flow shows result and routes to booking", async ({ pag
   await page.getByRole("button", { name: "Да" }).click();
 
   await expect(page.getByText("Тебе подойдёт: Crop Fade")).toBeVisible();
-  await expect(page.getByText(/BYN/)).toBeVisible();
+  await expect(page.getByText(/\d+\sр\./)).toBeVisible();
 
   await page.getByRole("button", { name: "Записаться с этой рекомендацией" }).click();
   await expect(page).toHaveURL(/\/booking$/);

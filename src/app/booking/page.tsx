@@ -22,6 +22,7 @@ import { Card } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { InlineError } from "@/shared/ui/inline-error";
 import { isValidBelarusPhone } from "@/shared/lib/belarus-phone";
+import { useHydratedStore } from "@/shared/lib/use-hydrated-store";
 import { PhoneInput } from "@/shared/ui/phone-input";
 import { cn } from "@/shared/lib/utils";
 
@@ -76,8 +77,9 @@ export default function BookingPage() {
   const clearSlot = useBookingDraftStore((state) => state.clearSlot);
   const resetDraft = useBookingDraftStore((state) => state.resetDraft);
   const createAppointment = useAppointmentStore((state) => state.createAppointment);
-  const authPhone = useAuthStore((state) => state.user?.phone);
+  const authPhone = useHydratedStore(useAuthStore, (state) => state.user?.phone);
   const contactRef = useRef<HTMLDivElement>(null);
+  const isMountedRef = useRef(false);
   const [showContact, setShowContact] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [comment, setComment] = useState("");
@@ -113,6 +115,14 @@ export default function BookingPage() {
     : !selectedBarber
       ? "Выбери доступного мастера"
       : "";
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (authPhone && !contactPhone) {
@@ -199,7 +209,9 @@ export default function BookingPage() {
         type: "salon",
       });
       resetDraft();
-      router.push("/booking/confirm");
+      if (isMountedRef.current) {
+        router.push("/booking/confirm");
+      }
     }, 350);
   };
 
@@ -217,7 +229,7 @@ export default function BookingPage() {
     if (phoneOtp !== "1111") {
       setErrors((current) => ({
         ...current,
-        phoneOtp: "Неверный код. Для MVP используй 1111",
+        phoneOtp: "Неверный код. В демо-версии код подтверждения: 1111",
       }));
       return;
     }
@@ -257,7 +269,7 @@ export default function BookingPage() {
           <div className="mb-5 space-y-3">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-semibold text-foreground">Услуга</p>
-              <span className="text-xs text-muted">цены в BYN</span>
+              <span className="text-xs text-muted">цены в рублях</span>
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {mockServices.map((service) => {
@@ -278,7 +290,7 @@ export default function BookingPage() {
                   >
                     <span className="block text-sm font-semibold">{service.name}</span>
                     <span className={cn("mt-1 block text-xs", selected ? "text-white/85" : "text-muted")}>
-                      {service.priceByn} BYN · {service.durationMinutes} мин
+                      {service.priceByn} р. · {service.durationMinutes} мин
                     </span>
                   </button>
                 );
@@ -409,6 +421,7 @@ export default function BookingPage() {
                     <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
                       <label className="block space-y-2" htmlFor="booking-phone-otp">
                         <span className="text-sm font-medium text-foreground">SMS-код</span>
+                        <span className="block text-xs text-muted">Демо-код: 1111</span>
                         <input
                           id="booking-phone-otp"
                           inputMode="numeric"

@@ -24,11 +24,17 @@ type AvatarProps = VariantProps<typeof avatarVariants> & {
   className?: string;
 };
 
+function getSafeAvatarSrc(src?: string) {
+  return src?.trim().toLowerCase().startsWith("javascript:") ? undefined : src;
+}
+
 export function Avatar({ src, alt, fallback, size, className }: AvatarProps) {
+  const safeSrc = getSafeAvatarSrc(src);
+
   return (
     <div className={cn(avatarVariants({ size, className }))}>
-      {src ? (
-        <img src={src} alt={alt ?? fallback} className="size-full object-cover" />
+      {safeSrc ? (
+        <img src={safeSrc} alt={alt ?? fallback} className="size-full object-cover" />
       ) : (
         <span className="font-semibold uppercase tracking-[0.12em]">{fallback.slice(0, 2)}</span>
       )}

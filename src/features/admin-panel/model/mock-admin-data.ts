@@ -1,3 +1,4 @@
+import { dateFromToday } from "@/shared/lib/date-utils";
 import type {
   AdminAvailability,
   AdminBarber,
@@ -5,12 +6,6 @@ import type {
   AdminBooking,
   AdminService,
 } from "./types";
-
-function dateFromToday(offsetDays: number) {
-  const date = new Date();
-  date.setDate(date.getDate() + offsetDays);
-  return date.toISOString().slice(0, 10);
-}
 
 export const weekdayLabels = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 

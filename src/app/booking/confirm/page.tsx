@@ -6,11 +6,12 @@ import { useAppointmentStore } from "@/entities/booking/appointment-store";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { EmptyState } from "@/shared/ui/empty-state";
+import { useHydratedStore } from "@/shared/lib/use-hydrated-store";
 import { FadeIn, MotionCard } from "@/shared/ui/motion";
 
 export default function BookingConfirmPage() {
-  const appointments = useAppointmentStore((state) => state.appointments);
-  const lastAppointmentId = useAppointmentStore((state) => state.lastAppointmentId);
+  const appointments = useHydratedStore(useAppointmentStore, (state) => state.appointments) ?? [];
+  const lastAppointmentId = useHydratedStore(useAppointmentStore, (state) => state.lastAppointmentId);
   const appointment =
     appointments.find((item) => item.id === lastAppointmentId) ??
     appointments[0];
@@ -56,7 +57,7 @@ export default function BookingConfirmPage() {
                   {appointment.endTime ? `-${appointment.endTime}` : ""}
                 </p>
                 <p><span className="text-muted">Длительность:</span> {appointment.durationMinutes} мин</p>
-                <p><span className="text-muted">Цена:</span> {appointment.priceByn} BYN</p>
+                <p><span className="text-muted">Цена:</span> {appointment.priceByn} р.</p>
                 <p><span className="text-muted">Клиент:</span> {appointment.clientName}</p>
                 <p><span className="text-muted">Телефон:</span> {appointment.clientPhone}</p>
                 {appointment.comment && (

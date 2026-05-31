@@ -1,5 +1,7 @@
 # STRIGLO
 
+# TODO: Supabase integration — see booking-api.ts (removed, restore when backend is ready)
+
 Mobile-first barber booking web app built with Next.js App Router, TypeScript, Tailwind CSS, Framer Motion, Zustand, Zod, Vitest, and Playwright.
 
 ## Setup

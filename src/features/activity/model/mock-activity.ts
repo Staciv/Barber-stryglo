@@ -1,3 +1,5 @@
+import { dateFromToday } from "@/shared/lib/date-utils";
+
 export type ActivityBookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
 
 export type ActivityBooking = {
@@ -34,17 +36,6 @@ export type GoRequestActivity = {
   status: GoRequestActivityStatus;
   barberMessage?: string;
 };
-
-function toDateValue(date: Date) {
-  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 10);
-}
-
-function dateFromToday(offsetDays: number) {
-  const date = new Date();
-  date.setDate(date.getDate() + offsetDays);
-  return toDateValue(date);
-}
 
 export const upcomingBookings: ActivityBooking[] = [];
 
