@@ -64,16 +64,16 @@ export default function ActivityPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-                STRIGLO activity
+                STRIGLO записи
               </p>
               <h1 className="mt-3 text-3xl font-black tracking-tight text-foreground">
                 Мои записи
               </h1>
             </div>
-            <Badge variant="accent">Timeline</Badge>
+            <Badge variant="accent">Лента</Badge>
           </div>
           <p className="mt-4 text-sm leading-6 text-muted">
-            Твои реальные mock-записи из booking flow. Если записей нет, начни с новой записи.
+            Твои тестовые записи из STRIGLO. Если записей нет, начни с новой записи.
           </p>
           <div className="mt-5 grid grid-cols-2 gap-3">
             <Link

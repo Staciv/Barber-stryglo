@@ -252,7 +252,7 @@ export default function BookingPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-                STRIGLO booking
+                STRIGLO запись
               </p>
               <h1 className="mt-3 text-3xl font-black tracking-tight text-foreground">
                 Выбери свободное время
