@@ -3,10 +3,8 @@
 import { motion } from "framer-motion";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { mockBarbers } from "@/entities/barber/mock";
 import type { BarberProfile } from "@/entities/barber/types";
 import { useAppointmentStore } from "@/entities/booking/appointment-store";
-import { mockServices } from "@/entities/service/mock";
 import { getMockSlots } from "@/entities/slot/mock";
 import { groupSlotsByDate } from "@/entities/slot/lib/group-slots-by-date";
 import { otpSchema } from "@/features/auth/lib/auth-validation";
@@ -14,6 +12,7 @@ import { useAuthStore } from "@/features/auth/model/auth-store";
 import { getAvailableBarbersForSelection } from "@/features/booking/lib/get-available-barbers";
 import { getBookableSlots } from "@/features/booking/lib/get-bookable-slots";
 import { useBookingDraftStore } from "@/features/booking/model/booking-draft-store";
+import { useBookingCatalog } from "@/features/booking/model/use-booking-catalog";
 import { SlotSelector } from "@/features/booking/ui/slot-selector";
 import { Avatar } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
@@ -78,6 +77,7 @@ export default function BookingPage() {
   const resetDraft = useBookingDraftStore((state) => state.resetDraft);
   const createAppointment = useAppointmentStore((state) => state.createAppointment);
   const authPhone = useHydratedStore(useAuthStore, (state) => state.user?.phone);
+  const { services, barbers } = useBookingCatalog();
   const contactRef = useRef<HTMLDivElement>(null);
   const isMountedRef = useRef(false);
   const [showContact, setShowContact] = useState(false);
@@ -87,15 +87,15 @@ export default function BookingPage() {
   const [isChangingPhone, setIsChangingPhone] = useState(false);
   const [errors, setErrors] = useState<{ customerName?: string; phone?: string; phoneOtp?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const selectedService = mockServices.find((service) => service.id === selectedServiceId);
+  const selectedService = services.find((service) => service.id === selectedServiceId);
   const bookableSlots = useMemo(
     () =>
       getBookableSlots({
         slots: getMockSlots(),
         service: selectedService,
-        barbers: mockBarbers,
+        barbers,
       }),
-    [selectedService],
+    [barbers, selectedService],
   );
   const slotGroups = useMemo(() => groupSlotsByDate(bookableSlots, { limit: 4 }), [bookableSlots]);
 
@@ -104,9 +104,9 @@ export default function BookingPage() {
       getAvailableBarbersForSelection({
         selectedSlot,
         selectedService,
-        barbers: mockBarbers,
+        barbers,
       }),
-    [selectedService, selectedSlot],
+    [barbers, selectedService, selectedSlot],
   );
   const selectedBarber = availableBarbers.find((barber) => barber.id === selectedBarberId);
   const canContinue = Boolean(selectedSlot && selectedBarber);
@@ -272,7 +272,7 @@ export default function BookingPage() {
               <span className="text-xs text-muted">цены в рублях</span>
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {mockServices.map((service) => {
+              {services.map((service) => {
                 const selected = service.id === selectedServiceId;
 
                 return (
