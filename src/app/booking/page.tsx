@@ -380,7 +380,9 @@ export default function BookingPage() {
               <div>
                 <p className="text-xs text-muted">Выбрано</p>
                 <p className="mt-1 text-base font-semibold text-foreground">
-                  {selectedSlot ? `${selectedSlot.startTime} · ${selectedSlot.date}` : "Слот не выбран"}
+                  {selectedSlot
+                    ? `${selectedSlot.startTime} · ${selectedSlot.date}${selectedService ? ` · ${selectedService.priceByn} р.` : ""}`
+                    : "Слот не выбран"}
                 </p>
                 <p className="mt-1 text-sm text-muted">
                   {selectedBarber ? selectedBarber.name : "Мастер не выбран"}
