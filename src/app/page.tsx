@@ -136,11 +136,16 @@ function ActionRow() {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.08, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      className="mt-4 grid grid-cols-2 gap-3"
+      className="mt-4 space-y-3"
       aria-label="Основные действия"
     >
-      <PrimaryButton />
-      <GoRideButton />
+      <PrimaryButton className="min-h-16 rounded-[1.55rem] text-lg md:min-h-[4.5rem]" />
+      <div className="space-y-2">
+        <p className="px-1 text-xs font-bold uppercase tracking-[0.18em] text-white/36">Дополнительный сервис</p>
+        <div className="[&>button]:min-h-[6.1rem] [&>button]:rounded-[1.9rem]">
+          <GoRideButton />
+        </div>
+      </div>
     </motion.section>
   );
 }
