@@ -104,7 +104,8 @@ test("mock login rejects wrong OTP and accepts 1111", async ({ page }) => {
   await page.getByRole("button", { name: "Войти" }).click();
 
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByText("+375291234567")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Мои записи" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Выйти" })).toBeVisible();
 });
 
 test("STRIGLO GO mock flow submits a premium request", async ({ page }) => {

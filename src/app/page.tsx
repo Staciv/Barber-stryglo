@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { ArrowRight, Clock3, MapPin, Scissors, Sparkles } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { useAuthStore } from "@/features/auth/model/auth-store";
@@ -16,7 +17,6 @@ const revealItem = {
 };
 
 function Header() {
-  const user = useHydratedStore(useAuthStore, (state) => state.user);
   const isAuthenticated = useHydratedStore(useAuthStore, (state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
 
@@ -29,7 +29,6 @@ function Header() {
     >
       <div className="min-w-0">
         <p className="text-xs font-black uppercase tracking-[0.44em] text-[#E8192C]">STRIGLO</p>
-        <p className="mt-1 truncate text-sm text-white/52">{isAuthenticated && user ? user.phone : "Гость"}</p>
       </div>
 
       <nav className="flex items-center gap-2" aria-label="Основная навигация">
@@ -75,31 +74,34 @@ function BarberProfileVisual({ glowY, lineY, visualY }: BarberProfileVisualProps
       initial={{ opacity: 0, y: 22, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay: 0.16, duration: 0.48, ease: smoothEase }}
-      className="pointer-events-none relative mx-auto mt-7 h-[18.75rem] w-full max-w-[23rem] overflow-hidden rounded-[2.25rem] border border-white/[0.08] bg-[radial-gradient(circle_at_48%_24%,rgba(232,25,44,0.3),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.015))] shadow-[0_34px_100px_rgba(0,0,0,0.58),inset_0_1px_0_rgba(255,255,255,0.06)] md:absolute md:bottom-8 md:right-8 md:mt-0 md:h-[28rem] md:max-w-[28rem]"
+      className="pointer-events-none relative -mx-5 mt-5 h-[24rem] overflow-hidden bg-transparent shadow-[0_42px_120px_rgba(0,0,0,0.5)] md:absolute md:bottom-4 md:right-2 md:mt-0 md:h-[34rem] md:w-[34rem] md:max-w-[34rem]"
     >
       <motion.div
         style={{ y: glowY }}
-        className="absolute inset-0 bg-[radial-gradient(circle_at_50%_74%,rgba(0,0,0,0),rgba(0,0,0,0.84)_72%),linear-gradient(180deg,rgba(6,5,5,0.12),rgba(6,5,5,0.9))]"
+        className="absolute -right-14 top-8 z-10 h-72 w-72 rounded-full bg-[#E8192C]/24 blur-3xl md:-right-20 md:h-96 md:w-96"
       />
-      <div className="absolute left-1/2 top-10 h-20 w-44 -translate-x-1/2 rounded-[70%_70%_44%_44%] bg-[linear-gradient(135deg,#0d0b0b,#2b2524_48%,#060505)] shadow-[0_8px_18px_rgba(0,0,0,0.52),inset_0_8px_14px_rgba(255,255,255,0.05)] md:top-14 md:h-28 md:w-60" />
-      <div className="absolute left-1/2 top-[5.7rem] h-32 w-28 -translate-x-1/2 rounded-[45%_45%_48%_48%] bg-[linear-gradient(145deg,#7c4d38,#c48a64_44%,#4b2f25)] shadow-[0_18px_42px_rgba(0,0,0,0.5),inset_-9px_4px_16px_rgba(0,0,0,0.22),inset_10px_0_14px_rgba(255,255,255,0.08)] md:top-[7.5rem] md:h-44 md:w-40" />
-      <div className="absolute left-1/2 top-[6.2rem] h-10 w-36 -translate-x-1/2 rounded-[55%_55%_35%_35%] bg-[linear-gradient(180deg,#151111,#030303)] shadow-[0_8px_12px_rgba(0,0,0,0.5)] md:top-[8rem] md:h-14 md:w-52" />
-      <div className="absolute left-[calc(50%-2.25rem)] top-[9.8rem] h-3 w-6 rounded-full bg-black/72 shadow-[0_0_0_4px_rgba(0,0,0,0.12)] md:left-[calc(50%-3.1rem)] md:top-[12.8rem] md:h-4 md:w-8" />
-      <div className="absolute right-[calc(50%-2.25rem)] top-[9.8rem] h-3 w-6 rounded-full bg-black/72 shadow-[0_0_0_4px_rgba(0,0,0,0.12)] md:right-[calc(50%-3.1rem)] md:top-[12.8rem] md:h-4 md:w-8" />
-      <div className="absolute left-1/2 top-[12.5rem] h-14 w-36 -translate-x-1/2 rounded-t-[2rem] bg-[linear-gradient(180deg,#111,#020202)] shadow-[0_18px_32px_rgba(0,0,0,0.62),inset_0_1px_0_rgba(255,255,255,0.07)] md:top-[17.2rem] md:h-24 md:w-56" />
+      <Image
+        src="/images/home/hero-barber.webp"
+        alt=""
+        fill
+        priority
+        unoptimized
+        sizes="(min-width: 768px) 34rem, 100vw"
+        className="-translate-x-[6%] scale-[1.25] object-cover object-[50%_30%] opacity-95 saturate-[0.94] contrast-[1.1] md:-translate-x-[5%] md:scale-[1.22]"
+      />
       <motion.div
         style={{ y: glowY }}
-        className="absolute bottom-5 left-1/2 h-12 w-[82%] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(232,25,44,0.28),transparent_62%)] blur-xl"
+        className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_54%_28%,rgba(255,255,255,0.07),transparent_24%),radial-gradient(circle_at_84%_34%,rgba(232,25,44,0.24),transparent_34%),linear-gradient(90deg,rgba(7,6,6,0.32)_0%,rgba(7,6,6,0.03)_42%,rgba(7,6,6,0.28)_100%),linear-gradient(180deg,rgba(10,8,8,0)_0%,rgba(4,4,4,0.18)_48%,rgba(3,3,3,0.96)_100%)]"
       />
       <motion.div
         style={{ y: lineY }}
-        className="absolute left-7 top-12 h-24 w-1 rotate-[-28deg] rounded-full bg-[#E8192C]/70 shadow-[0_0_34px_rgba(232,25,44,0.42)] md:left-10 md:top-20 md:h-32"
+        className="absolute left-16 top-16 z-20 h-28 w-px rotate-[-28deg] rounded-full bg-[#E8192C]/70 shadow-[0_0_34px_rgba(232,25,44,0.42)] md:left-20 md:top-24 md:h-36"
       />
       <motion.div
         style={{ y: lineY }}
-        className="absolute right-8 top-16 h-28 w-1 rotate-[24deg] rounded-full bg-white/14 shadow-[0_0_24px_rgba(255,255,255,0.1)] md:right-12 md:top-24 md:h-36"
+        className="absolute right-14 top-16 z-20 h-28 w-px rotate-[24deg] rounded-full bg-white/10 shadow-[0_0_24px_rgba(255,255,255,0.1)] md:right-20 md:top-24 md:h-40"
       />
-      <div className="absolute inset-x-8 bottom-6 h-px bg-gradient-to-r from-transparent via-[#E8192C]/60 to-transparent" />
+      <div className="absolute inset-x-12 bottom-9 z-20 h-px bg-gradient-to-r from-transparent via-[#E8192C]/48 to-transparent" />
     </motion.div>
   );
 }
@@ -167,7 +169,7 @@ function GoPremiumCard() {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.24, duration: 0.36, ease: smoothEase }}
       className="mt-3"
@@ -218,7 +220,7 @@ function HeroSection() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.36, ease: smoothEase }}
-      className="relative mt-7 overflow-hidden rounded-[2.35rem] border border-white/[0.1] bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.018)_42%,rgba(0,0,0,0.18))] p-5 shadow-[0_30px_110px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] md:min-h-[42rem] md:p-8"
+      className="relative mt-7 overflow-hidden rounded-[2.35rem] border border-white/[0.1] bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.018)_42%,rgba(0,0,0,0.18))] p-5 pb-0 shadow-[0_30px_110px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] md:min-h-[43rem] md:p-8"
     >
       <motion.div
         style={{ y: backgroundY }}
@@ -280,7 +282,7 @@ export default function HomePage() {
         <Header />
         <HeroSection />
 
-        <div className="mx-auto max-w-3xl md:-mt-24 md:ml-8 md:mr-auto">
+        <div className="mx-auto mt-7 max-w-3xl md:ml-8 md:mr-auto">
           <SlotsPreview />
           <GoPremiumCard />
         </div>
