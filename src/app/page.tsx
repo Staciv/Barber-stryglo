@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Clock3, MapPin, Scissors, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,53 +56,6 @@ function Header() {
         )}
       </nav>
     </motion.header>
-  );
-}
-
-type BarberProfileVisualProps = {
-  glowY: MotionValue<number>;
-  lineY: MotionValue<number>;
-  visualY: MotionValue<number>;
-};
-
-function BarberProfileVisual({ glowY, lineY, visualY }: BarberProfileVisualProps) {
-  return (
-    <motion.div
-      role="img"
-      aria-label="Премиальный профиль барбера STRIGLO"
-      style={{ y: visualY }}
-      initial={{ opacity: 0, y: 22, scale: 0.985 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay: 0.16, duration: 0.48, ease: smoothEase }}
-      className="pointer-events-none relative -mx-5 mt-5 h-[24rem] overflow-hidden bg-transparent shadow-[0_42px_120px_rgba(0,0,0,0.5)] md:absolute md:bottom-4 md:right-2 md:mt-0 md:h-[34rem] md:w-[34rem] md:max-w-[34rem]"
-    >
-      <motion.div
-        style={{ y: glowY }}
-        className="absolute -right-14 top-8 z-10 h-72 w-72 rounded-full bg-[#E8192C]/24 blur-3xl md:-right-20 md:h-96 md:w-96"
-      />
-      <Image
-        src="/images/home/hero-barber.webp"
-        alt=""
-        fill
-        priority
-        unoptimized
-        sizes="(min-width: 768px) 34rem, 100vw"
-        className="-translate-x-[6%] scale-[1.25] object-cover object-[50%_30%] opacity-95 saturate-[0.94] contrast-[1.1] md:-translate-x-[5%] md:scale-[1.22]"
-      />
-      <motion.div
-        style={{ y: glowY }}
-        className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_54%_28%,rgba(255,255,255,0.07),transparent_24%),radial-gradient(circle_at_84%_34%,rgba(232,25,44,0.24),transparent_34%),linear-gradient(90deg,rgba(7,6,6,0.32)_0%,rgba(7,6,6,0.03)_42%,rgba(7,6,6,0.28)_100%),linear-gradient(180deg,rgba(10,8,8,0)_0%,rgba(4,4,4,0.18)_48%,rgba(3,3,3,0.96)_100%)]"
-      />
-      <motion.div
-        style={{ y: lineY }}
-        className="absolute left-16 top-16 z-20 h-28 w-px rotate-[-28deg] rounded-full bg-[#E8192C]/70 shadow-[0_0_34px_rgba(232,25,44,0.42)] md:left-20 md:top-24 md:h-36"
-      />
-      <motion.div
-        style={{ y: lineY }}
-        className="absolute right-14 top-16 z-20 h-28 w-px rotate-[24deg] rounded-full bg-white/10 shadow-[0_0_24px_rgba(255,255,255,0.1)] md:right-20 md:top-24 md:h-40"
-      />
-      <div className="absolute inset-x-12 bottom-9 z-20 h-px bg-gradient-to-r from-transparent via-[#E8192C]/48 to-transparent" />
-    </motion.div>
   );
 }
 
@@ -209,10 +162,7 @@ function HeroSection() {
     target: heroRef,
     offset: ["start start", "end start"],
   });
-  const backgroundY = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [0, 0] : [0, 34]);
-  const glowY = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [0, 0] : [0, -18]);
-  const lineY = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [0, 0] : [0, -28]);
-  const visualY = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [0, 0] : [0, -38]);
+  const imageY = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [0, 0] : [0, 34]);
 
   return (
     <motion.section
@@ -220,19 +170,30 @@ function HeroSection() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.36, ease: smoothEase }}
-      className="relative mt-7 overflow-hidden rounded-[2.35rem] border border-white/[0.1] bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.018)_42%,rgba(0,0,0,0.18))] p-5 pb-0 shadow-[0_30px_110px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] md:min-h-[43rem] md:p-8"
+      className="relative mt-6 min-h-[calc(100svh-7.25rem)] overflow-hidden rounded-[2.35rem] border border-white/[0.1] bg-[#060505] shadow-[0_30px_110px_rgba(0,0,0,0.56),inset_0_1px_0_rgba(255,255,255,0.06)] md:min-h-[min(820px,82vh)]"
     >
       <motion.div
-        style={{ y: backgroundY }}
-        className="absolute inset-0 bg-[radial-gradient(circle_at_22%_0%,rgba(232,25,44,0.24),transparent_31%),radial-gradient(circle_at_86%_12%,rgba(255,255,255,0.055),transparent_24%),linear-gradient(180deg,rgba(11,9,9,0),rgba(3,3,3,0.78))]"
-      />
-      <motion.div
-        style={{ y: lineY }}
-        className="absolute left-0 top-1/3 h-px w-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent"
-      />
+        role="img"
+        aria-label="Премиальный профиль барбера STRIGLO"
+        style={{ y: imageY }}
+        className="absolute inset-0"
+      >
+        <Image
+          src="/images/home/hero-barber.webp"
+          alt=""
+          fill
+          priority
+          unoptimized
+          sizes="(min-width: 768px) 70rem, 100vw"
+          className="scale-[1.1] object-cover object-[45%_29%] opacity-96 saturate-[0.94] contrast-[1.1] md:scale-[1.04] md:object-[50%_31%]"
+        />
+      </motion.div>
+
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_16%,rgba(232,25,44,0.18),transparent_29%),radial-gradient(circle_at_20%_2%,rgba(255,255,255,0.08),transparent_20%),linear-gradient(180deg,rgba(3,3,3,0.42)_0%,rgba(3,3,3,0.08)_28%,rgba(3,3,3,0.18)_50%,rgba(3,3,3,0.94)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,3,3,0.5)_0%,rgba(3,3,3,0.12)_42%,rgba(3,3,3,0.34)_100%)]" />
 
       <motion.div
-        className="relative z-10 md:max-w-[36rem]"
+        className="absolute inset-x-5 bottom-16 z-10 max-w-[28rem] md:bottom-20 md:left-8 md:right-auto md:max-w-[36rem]"
         initial="hidden"
         animate="visible"
         variants={{
@@ -245,32 +206,31 @@ function HeroSection() {
         <motion.span
           variants={revealItem}
           transition={{ duration: 0.32, ease: smoothEase }}
-          className="inline-flex min-h-9 items-center gap-2 rounded-full border border-[#E8192C]/25 bg-[#E8192C]/10 px-3.5 text-xs font-black text-[#ff4050] shadow-[0_0_28px_rgba(232,25,44,0.13)]"
+          className="inline-flex min-h-9 items-center gap-2 rounded-full border border-[#E8192C]/28 bg-black/28 px-3.5 text-xs font-black text-[#ff4050] shadow-[0_0_28px_rgba(232,25,44,0.13)] backdrop-blur-sm"
         >
           <Scissors className="size-4" aria-hidden="true" />
-          Барберинг без звонков
+          Запись к барберу
         </motion.span>
         <motion.h1
           variants={revealItem}
           transition={{ duration: 0.38, ease: smoothEase }}
-          className="mt-5 max-w-[10ch] text-[3.4rem] font-black leading-[0.86] tracking-[-0.07em] text-white sm:text-7xl md:text-[6.7rem]"
+          className="mt-4 max-w-[9ch] text-[3.45rem] font-black leading-[0.9] tracking-[-0.07em] text-white drop-shadow-[0_12px_30px_rgba(0,0,0,0.64)] sm:text-7xl md:text-[6.4rem]"
         >
-          Твой барбер уже рядом
+          Без звонков. Без лишнего.
         </motion.h1>
         <motion.p
           variants={revealItem}
           transition={{ duration: 0.34, ease: smoothEase }}
-          className="mt-5 max-w-md text-base leading-7 text-white/62 md:text-lg"
+          className="mt-4 max-w-sm text-base leading-7 text-white/68 drop-shadow-[0_8px_18px_rgba(0,0,0,0.68)] md:text-lg"
         >
-          Выбери время, услугу и мастера. STRIGLO соберёт запись быстро и без лишней переписки.
+          Выбери время, мастер подтвердит запись, а мы напомним.
         </motion.p>
 
-        <motion.div variants={revealItem} transition={{ duration: 0.32, ease: smoothEase }} className="mt-7">
+        <motion.div variants={revealItem} transition={{ duration: 0.32, ease: smoothEase }} className="mt-6">
           <PrimaryCta />
         </motion.div>
       </motion.div>
 
-      <BarberProfileVisual glowY={glowY} lineY={lineY} visualY={visualY} />
     </motion.section>
   );
 }
@@ -282,7 +242,7 @@ export default function HomePage() {
         <Header />
         <HeroSection />
 
-        <div className="mx-auto mt-7 max-w-3xl md:ml-8 md:mr-auto">
+        <div className="mx-auto mt-6 max-w-3xl md:mt-8">
           <SlotsPreview />
           <GoPremiumCard />
         </div>

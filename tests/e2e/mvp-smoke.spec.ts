@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 test("home page loads with booking CTA and STRIGLO branding", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: /Твой барбер уже рядом/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Без звонков\. Без лишнего\./ })).toBeVisible();
   await expect(page.getByText("STRIGLO").first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Записаться" })).toHaveAttribute("href", "/booking");
   await expect(page.getByText("14:00")).toBeVisible();
