@@ -40,7 +40,7 @@ export default function BookingConfirmPage() {
           <Badge variant="success">Запись подтверждена</Badge>
           <h1 className="mt-4 text-3xl font-black tracking-tight text-foreground">Готово</h1>
           <p className="mt-3 text-sm leading-6 text-muted">
-            Мы сохранили запись в mock-истории. Детали доступны в активности.
+            Мы сохранили запись в тестовой истории. Детали доступны в активности.
           </p>
         </FadeIn>
 

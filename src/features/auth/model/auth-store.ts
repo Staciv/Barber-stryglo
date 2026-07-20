@@ -60,7 +60,7 @@ export const useAuthStore = create<AuthState>()(
         if (code !== "1111") {
           return {
             success: false,
-            error: "Неверный код. Для MVP используй 1111",
+            error: "Неверный код. В демо-версии код подтверждения: 1111",
           };
         }
 

@@ -189,7 +189,7 @@ function GoPageContent() {
             <Badge variant="success">GO-заявка отправлена</Badge>
             <h1 className="mt-4 text-3xl font-black tracking-tight text-foreground">Заявка у мастера</h1>
             <p className="mt-3 text-sm leading-6 text-muted">
-              Это mock-заявка. В реальной версии мастер сможет подтвердить время или предложить другое.
+              Это демо-заявка. В реальной версии мастер сможет подтвердить время или предложить другое.
             </p>
           </motion.section>
 
@@ -235,7 +235,7 @@ function GoPageContent() {
           <Badge variant="accent">STRIGLO GO</Badge>
           <h1 className="mt-4 text-3xl font-black tracking-tight text-foreground">Выездная стрижка</h1>
           <p className="mt-3 text-sm leading-6 text-muted">
-            Premium-заявка на выезд мастера. Выбери окно, услугу и адрес без лишней CRM-формы.
+            Премиальная заявка на выезд мастера. Выбери окно, услугу и адрес без лишних форм.
           </p>
         </motion.section>
 
@@ -246,7 +246,7 @@ function GoPageContent() {
                 <h2 className="text-lg font-semibold text-foreground">Выбери дату и время выезда</h2>
                 <p className="mt-1 text-sm text-muted">Выбери готовый вариант или предложи своё время</p>
               </div>
-              <Badge variant="warning">Mock</Badge>
+              <Badge variant="warning">Демо</Badge>
             </div>
 
             <div className="mt-4 grid gap-2">

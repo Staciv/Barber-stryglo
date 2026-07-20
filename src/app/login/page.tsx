@@ -86,16 +86,16 @@ export default function LoginPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-                STRIGLO login
+                STRIGLO вход
               </p>
               <h1 className="mt-3 text-3xl font-black tracking-tight text-foreground">
                 Вход по телефону
               </h1>
             </div>
-            <Badge variant="accent">MVP</Badge>
+            <Badge variant="accent">Демо</Badge>
           </div>
           <p className="mt-4 text-sm leading-6 text-muted">
-            Без email и паролей. Сейчас это mock flow: тестовый код — 1111.
+            Без email и паролей. Сейчас это демо-вход: тестовый код — 1111.
           </p>
         </motion.section>
 

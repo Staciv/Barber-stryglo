@@ -3,17 +3,15 @@
 import { motion } from "framer-motion";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { mockBarbers } from "@/entities/barber/mock";
 import type { BarberProfile } from "@/entities/barber/types";
 import { useAppointmentStore } from "@/entities/booking/appointment-store";
-import { mockServices } from "@/entities/service/mock";
 import { getMockSlots } from "@/entities/slot/mock";
 import { groupSlotsByDate } from "@/entities/slot/lib/group-slots-by-date";
-import { otpSchema } from "@/features/auth/lib/auth-validation";
 import { useAuthStore } from "@/features/auth/model/auth-store";
 import { getAvailableBarbersForSelection } from "@/features/booking/lib/get-available-barbers";
 import { getBookableSlots } from "@/features/booking/lib/get-bookable-slots";
 import { useBookingDraftStore } from "@/features/booking/model/booking-draft-store";
+import { useBookingCatalog } from "@/features/booking/model/use-booking-catalog";
 import { SlotSelector } from "@/features/booking/ui/slot-selector";
 import { Avatar } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
@@ -68,34 +66,31 @@ export default function BookingPage() {
   const selectedBarberId = useBookingDraftStore((state) => state.selectedBarberId);
   const selectedServiceId = useBookingDraftStore((state) => state.selectedServiceId);
   const contactPhone = useBookingDraftStore((state) => state.contactPhone);
-  const isContactPhoneVerified = useBookingDraftStore((state) => state.isContactPhoneVerified);
   const setSlot = useBookingDraftStore((state) => state.setSlot);
   const setBarber = useBookingDraftStore((state) => state.setBarber);
   const setService = useBookingDraftStore((state) => state.setService);
   const setContactPhone = useBookingDraftStore((state) => state.setContactPhone);
-  const setContactPhoneVerified = useBookingDraftStore((state) => state.setContactPhoneVerified);
   const clearSlot = useBookingDraftStore((state) => state.clearSlot);
   const resetDraft = useBookingDraftStore((state) => state.resetDraft);
   const createAppointment = useAppointmentStore((state) => state.createAppointment);
   const authPhone = useHydratedStore(useAuthStore, (state) => state.user?.phone);
+  const { services, barbers } = useBookingCatalog();
   const contactRef = useRef<HTMLDivElement>(null);
   const isMountedRef = useRef(false);
   const [showContact, setShowContact] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [comment, setComment] = useState("");
-  const [phoneOtp, setPhoneOtp] = useState("");
-  const [isChangingPhone, setIsChangingPhone] = useState(false);
-  const [errors, setErrors] = useState<{ customerName?: string; phone?: string; phoneOtp?: string }>({});
+  const [errors, setErrors] = useState<{ customerName?: string; phone?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const selectedService = mockServices.find((service) => service.id === selectedServiceId);
+  const selectedService = services.find((service) => service.id === selectedServiceId);
   const bookableSlots = useMemo(
     () =>
       getBookableSlots({
         slots: getMockSlots(),
         service: selectedService,
-        barbers: mockBarbers,
+        barbers,
       }),
-    [selectedService],
+    [barbers, selectedService],
   );
   const slotGroups = useMemo(() => groupSlotsByDate(bookableSlots, { limit: 4 }), [bookableSlots]);
 
@@ -104,9 +99,9 @@ export default function BookingPage() {
       getAvailableBarbersForSelection({
         selectedSlot,
         selectedService,
-        barbers: mockBarbers,
+        barbers,
       }),
-    [selectedService, selectedSlot],
+    [barbers, selectedService, selectedSlot],
   );
   const selectedBarber = availableBarbers.find((barber) => barber.id === selectedBarberId);
   const canContinue = Boolean(selectedSlot && selectedBarber);
@@ -126,17 +121,9 @@ export default function BookingPage() {
 
   useEffect(() => {
     if (authPhone && !contactPhone) {
-      setContactPhone(authPhone, true);
-      setIsChangingPhone(false);
+      setContactPhone(authPhone);
     }
   }, [authPhone, contactPhone, setContactPhone]);
-
-  useEffect(() => {
-    if (authPhone && contactPhone === authPhone && !isContactPhoneVerified) {
-      setContactPhoneVerified(true);
-      setIsChangingPhone(false);
-    }
-  }, [authPhone, contactPhone, isContactPhoneVerified, setContactPhoneVerified]);
 
   useEffect(() => {
     if (selectedSlot && !bookableSlots.some((slot) => slot.id === selectedSlot.id)) {
@@ -180,8 +167,6 @@ export default function BookingPage() {
         ? "Введите телефон"
         : !isValidBelarusPhone(contactPhone)
           ? "Введи белорусский номер: +375 29 123 45 67"
-          : !isContactPhoneVerified
-            ? "Подтверди телефон SMS-кодом 1111"
           : undefined,
     };
     setErrors(nextErrors);
@@ -215,31 +200,6 @@ export default function BookingPage() {
     }, 350);
   };
 
-  const handlePhoneOtpVerify = () => {
-    const otpResult = otpSchema.safeParse(phoneOtp);
-
-    if (!otpResult.success) {
-      setErrors((current) => ({
-        ...current,
-        phoneOtp: otpResult.error.errors[0]?.message ?? "Проверь код",
-      }));
-      return;
-    }
-
-    if (phoneOtp !== "1111") {
-      setErrors((current) => ({
-        ...current,
-        phoneOtp: "Неверный код. В демо-версии код подтверждения: 1111",
-      }));
-      return;
-    }
-
-    setContactPhoneVerified(true);
-    setIsChangingPhone(false);
-    setPhoneOtp("");
-    setErrors((current) => ({ ...current, phone: undefined, phoneOtp: undefined }));
-  };
-
   return (
     <main className="min-h-screen bg-striglo-grid">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pt-safe-offset-6">
@@ -252,7 +212,7 @@ export default function BookingPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-                STRIGLO booking
+                STRIGLO запись
               </p>
               <h1 className="mt-3 text-3xl font-black tracking-tight text-foreground">
                 Выбери свободное время
@@ -272,7 +232,7 @@ export default function BookingPage() {
               <span className="text-xs text-muted">цены в рублях</span>
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {mockServices.map((service) => {
+              {services.map((service) => {
                 const selected = service.id === selectedServiceId;
 
                 return (
@@ -386,72 +346,15 @@ export default function BookingPage() {
                 <InlineError>{errors.customerName}</InlineError>
               </label>
 
-              {authPhone && contactPhone === authPhone && isContactPhoneVerified && !isChangingPhone ? (
-                <div className="rounded-2xl border border-success/20 bg-success/10 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm text-muted">Проверенный телефон</p>
-                      <p className="mt-1 text-base font-semibold text-foreground">{contactPhone}</p>
-                    </div>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => setIsChangingPhone(true)}
-                    >
-                      Изменить
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <PhoneInput
-                    id="booking-phone"
-                    value={contactPhone}
-                    onChange={(nextPhone) => {
-                      setContactPhone(nextPhone, Boolean(authPhone && nextPhone === authPhone));
-                      setPhoneOtp("");
-                      setErrors((current) => ({ ...current, phone: undefined, phoneOtp: undefined }));
-                    }}
-                    error={errors.phone}
-                    description="Если номер отличается от аккаунта, подтверди его кодом 1111."
-                  />
-
-                  {contactPhone && isValidBelarusPhone(contactPhone) && !isContactPhoneVerified && (
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-                      <label className="block space-y-2" htmlFor="booking-phone-otp">
-                        <span className="text-sm font-medium text-foreground">SMS-код</span>
-                        <span className="block text-xs text-muted">Демо-код: 1111</span>
-                        <input
-                          id="booking-phone-otp"
-                          inputMode="numeric"
-                          maxLength={4}
-                          value={phoneOtp}
-                          onChange={(event) => {
-                            setPhoneOtp(event.target.value.replace(/\D/g, "").slice(0, 4));
-                            setErrors((current) => ({ ...current, phoneOtp: undefined }));
-                          }}
-                          placeholder="1111"
-                          className={cn(
-                            "min-h-12 w-full rounded-xl border bg-black/20 px-4 text-center text-lg font-black tracking-[0.3em] text-foreground outline-none focus:border-accent focus:ring-2 focus:ring-accent/30",
-                            errors.phoneOtp ? "border-danger/60" : "border-white/10",
-                          )}
-                        />
-                      </label>
-                      <InlineError>{errors.phoneOtp}</InlineError>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        className="mt-3 w-full"
-                        onClick={handlePhoneOtpVerify}
-                      >
-                        Подтвердить телефон
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
+              <PhoneInput
+                id="booking-phone"
+                value={contactPhone}
+                onChange={(nextPhone) => {
+                  setContactPhone(nextPhone);
+                  setErrors((current) => ({ ...current, phone: undefined }));
+                }}
+                error={errors.phone}
+              />
 
               <label className="block space-y-2" htmlFor="booking-comment">
                 <span className="text-sm font-medium text-foreground">Комментарий</span>
@@ -477,7 +380,9 @@ export default function BookingPage() {
               <div>
                 <p className="text-xs text-muted">Выбрано</p>
                 <p className="mt-1 text-base font-semibold text-foreground">
-                  {selectedSlot ? `${selectedSlot.startTime} · ${selectedSlot.date}` : "Слот не выбран"}
+                  {selectedSlot
+                    ? `${selectedSlot.startTime} · ${selectedSlot.date}${selectedService ? ` · ${selectedService.priceByn} р.` : ""}`
+                    : "Слот не выбран"}
                 </p>
                 <p className="mt-1 text-sm text-muted">
                   {selectedBarber ? selectedBarber.name : "Мастер не выбран"}

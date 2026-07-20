@@ -8,9 +8,13 @@ test.beforeEach(async ({ page }) => {
 test("home page loads with booking CTA and STRIGLO branding", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: /Запишись к барберу/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Без звонков\. Без лишнего\./ })).toBeVisible();
   await expect(page.getByText("STRIGLO").first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Записаться" })).toHaveAttribute("href", "/booking");
+  await expect(page.getByText("14:00")).toBeVisible();
+  await expect(page.getByText("15:30")).toBeVisible();
+  await expect(page.getByText("17:00")).toBeVisible();
+  await expect(page.getByRole("link", { name: /STRIGLO GO/ })).toHaveAttribute("href", "/go");
 });
 
 test("booking mock flow creates a confirmed appointment", async ({ page }) => {
@@ -32,8 +36,7 @@ test("booking mock flow creates a confirmed appointment", async ({ page }) => {
   }
 
   await page.getByRole("button", { name: "Продолжить" }).click();
-  await expect(page.getByText("Проверенный телефон")).toBeVisible();
-  await expect(page.getByText("+375291234567")).toBeVisible();
+  await expect(page.locator("#booking-phone")).toHaveValue("29 123 45 67");
   await page.locator("#booking-name").fill("QA Клиент");
   await page.locator("#booking-comment").fill("Тестовый комментарий");
   await page.getByRole("button", { name: "Подтвердить запись" }).click();
@@ -79,10 +82,12 @@ test("booking contact form requires name and Belarus phone", async ({ page }) =>
   await expect(page.getByText(/Номер должен содержать|белорусский номер/)).toBeVisible();
 
   await page.locator("#booking-phone").fill("33 123 45 67");
-  await expect(page.getByText("Демо-код: 1111")).toBeVisible();
-  await page.getByLabel("SMS-код").fill("1111");
-  await page.getByRole("button", { name: "Подтвердить телефон" }).click();
   await expect(page.getByText("Демо-код: 1111")).not.toBeVisible();
+  await expect(page.getByLabel("SMS-код")).not.toBeVisible();
+  await page.getByRole("button", { name: "Подтвердить запись" }).click();
+  await expect(page).toHaveURL(/\/booking\/confirm$/);
+  await expect(page.getByText("QA Клиент")).toBeVisible();
+  await expect(page.getByText("+375331234567")).toBeVisible();
 });
 
 test("mock login rejects wrong OTP and accepts 1111", async ({ page }) => {
@@ -99,7 +104,8 @@ test("mock login rejects wrong OTP and accepts 1111", async ({ page }) => {
   await page.getByRole("button", { name: "Войти" }).click();
 
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByText("+375291234567")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Мои записи" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Выйти" })).toBeVisible();
 });
 
 test("STRIGLO GO mock flow submits a premium request", async ({ page }) => {
